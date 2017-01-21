@@ -62,13 +62,12 @@ function createAccount(customerID, accountType, accountNickname, rewards, balanc
         url: baseUrl + "customers/" + customerID + "/accounts" + keyUrl,
         body: JSON.stringify(
         	{
-  "type": accountType,
-  "nickname": accountNickname,
-  "rewards": rewards,
-  "balance": balance,
-  "account_number": generateRandomNumber(16)
-}
-        	)
+				"type": accountType,
+				"nickname": accountNickname,
+				"rewards": rewards,
+				"balance": balance,
+				"account_number": generateRandomNumber(16)
+			})
 	},function(error, response, body){
 		console.log(response["_id"]); //account id
 		//plug this into the database
@@ -103,13 +102,12 @@ function makePurchase(accountID, merchantID, medium, purchaseDate, amount, descr
         url: baseUrl + "accounts/" + accountID + "/purchases" + keyUrl,
         body: JSON.stringify(
         	{
-  "merchant_id": merchantID,
-  "medium": medium,
-  "purchase_date": purchaseDate,
-  "amount": amount,
-  "description": description
-}
-        	)
+				  "merchant_id": merchantID,
+				  "medium": medium,
+				  "purchase_date": purchaseDate,
+				  "amount": amount,
+				  "description": description
+			});
 	},function(error, response, body){
 		console.log(response["_id"]); //purchase id
 		//not sure if this needs to go into the database
