@@ -9,6 +9,8 @@
     --text-light: var(--bg-light);
     --text-dark: rgb(47, 36, 29);
     --text-extra-dark: rgb(19, 29, 40);
+
+    --btn-color: rgb(3, 95, 29);
 }
 
 ::selection {
@@ -167,7 +169,9 @@ header .banner-subtitle {
 /* Modals */
 input {
     padding: 0.5em 1em;
+
     font-family: "Overpass", sans-serif;
+    font-size: 1.2em;
 }
 
 .modal-wrapper {
@@ -175,6 +179,7 @@ input {
 }
 
 .modal {
+    padding-bottom: 0;
     background: var(--bg-light);
 }
 
@@ -186,6 +191,10 @@ input {
 }
 
 .modal > div {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+
     margin: 1em 0;
 }
 
@@ -194,9 +203,37 @@ input {
 }
 
 .modal h2 {
+    text-transform: uppercase;
+    letter-spacing: 2px;
 
+    flex-grow: 1;
+
+    font-size: 1.25em;
 }
 
-.modal > button {
+.modal .btn-wrapper {
+    padding-top: 2em;
+    border-top: 2px solid var(--bg-extra-dark);
+}
 
+.modal button {
+    display: block;
+
+    margin: auto;
+
+    background: var(--bg-dark);
+    color: var(--text-light);
+
+    padding: 0.5em 2em;
+    font-size: 1.25em;
+
+    border: 1px solid var(--bg-extra-dark);
+    border-radius: 5px;
+
+    box-shadow: 0 6px 0 var(--bg-extra-dark), 0 7px 40px #777;
+
+    text-decoration: none;
+
+    text-transform: uppercase;
+    letter-spacing: 2px;
 }
