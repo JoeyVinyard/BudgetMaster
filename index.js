@@ -61,7 +61,7 @@ http.listen(3000, function(){
 //--------------------------------------
 //--------Capital One Functions---------
 //--------------------------------------
-createCustomer();
+//createCustomer();
 function createCustomer(firstName, lastName, streetNum, streetName, city, state, zip){
 	if(firstName === undefined){
 		firstName = "Katy";
@@ -142,13 +142,8 @@ function createAccount(customerID, accountType, accountNickname, rewards, balanc
 				"account_number": generateRandomNumber(16)
 			}
 	},function(error, response, body){
-<<<<<<< HEAD
 		console.log(body.objectCreated._id); //account id
 		//makePurchase(body.objectCreated.account_number,"57cf75cea73e494d8675ec49");
-=======
-		console.log(body); //account id
-		makePurchase(body.objectCreated._id,"57cf75cea73e494d8675ec49");
->>>>>>> c4ed65c45be31861b595a581edc04d48e7846d3d
 		//plug this into the database
 		makePurchase(body.objectCreated._id);
 	});
@@ -204,9 +199,16 @@ function getPurchases(customerID){
 		});
 }
 
-function getMerchantLatLng(merchantID){
+getMerchantInfo("57cf75cea73e494d8675ec49");
+
+function getMerchantInfo(merchantID){
+	//get lat, lng, category
 	request(baseUrl + "enterprise/merchants/" + merchantID + keyUrl,
 		function(error, response, body){
-			console.log(response);
+			body = JSON.parse(body); //for some reason it comes back as a string
+			console.log(body.geocode.lat);
+			console.log(body.geocode.lng);
+			console.log(body.category[0]); //first category
+			console.log(body.name); //name of establishment
 		});
 }
