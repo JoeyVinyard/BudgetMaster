@@ -22,7 +22,7 @@ $(document).ready(function() {
         event.preventDefault();
     });
 
-    $(".reg-btn").click(function() {
+    $(".reg-btn").click(function(event) {
         var fullAddress = $(".reg-address").val().split(/\s+/);
 
         var addressNumber = fullAddress[0];
