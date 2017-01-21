@@ -9,6 +9,10 @@ $(document).ready(function() {
 
     var socket = io("http://localhost:3000");
 
+    socket.on('connStat', function(user){
+        console.log(user);
+    });
+
     $(".log-btn").click(function(event) {
         socket.emit("log", {
             username: $(".login-name").val().trim(),
@@ -18,7 +22,7 @@ $(document).ready(function() {
         event.preventDefault();
     });
 
-    $(".reg-btn").click(function() {
+    $(".reg-btn").click(function(event) {
         var fullAddress = $(".reg-address").val().split(/\s+/);
 
         var addressNumber = fullAddress[0];
