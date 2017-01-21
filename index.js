@@ -141,9 +141,9 @@ io.on('connection', function(socket){
 							category: body.category[0],
 							amount_spent: data[p].amount,
 							purchase_date: data[p].purchase_date,
-							desc: data[p].description
+							desc: data[p].description,
 							lat: body.geocode.lat,
-							lng: body.geocode.lng,
+							lng: body.geocode.lng
 						}
 						//Send andrew info
 					});
