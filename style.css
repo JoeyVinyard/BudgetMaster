@@ -1,14 +1,12 @@
 
 :root {
-    --main-green: rgb(251, 225, 34);
-    --main-gold: rgb(3, 95, 29);
-
     --bg-light: rgb(248, 246, 214);
+    --bg-off-light: rgb(255, 241, 139);
     --bg-dark: rgb(34, 70, 49);
     --bg-extra-dark: rgb(17, 25, 24);
 
     --text-light: var(--bg-light);
-    --text-dark: rgb(0, 0, 0);
+    --text-dark: rgb(47, 36, 29);
 }
 
 html, * {
@@ -79,24 +77,35 @@ nav .links a:hover {
     border-bottom-width: 4px;
 }
 
+.main {
+    background: url("img/banner-bg.jpg");
+    background-size: cover;
+}
+
 header {
-    padding: 5em 6em;
+    padding: 6em 6em;
+    margin-bottom: 3em;
+
     text-align: center;
 
     color: var(--text-light);
 
-    background: url("img/banner-bg.jpg");
-    background-size: cover;
-
     border-top: 2px solid gold;
-    border-bottom: 2px solid gold;
 }
 
 header .banner-title {
     margin-bottom: 0.75em;
 
     font-family: "Cinzel", serif;
-    font-size: 3.5em;
-    letter-spacing: 2px;
+    font-size: 4em;
+    letter-spacing: 10px;
+}
+
+header .banner-subtitle {
+    display: inline-block;
+    padding: 1em 2em;
+
+    font-size: 2em;
+    line-height: 1.5;
 }
 
