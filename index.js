@@ -115,7 +115,7 @@ io.on('connection', function(socket){
 					for(var i=0;i<out.length;i++){
 						out[i] = (out[i].replace(/\r/i,''));
 						if(out[i].includes(user.username)&&out[i].includes(user.password)){
-							socket.emit('connStat', {use: user,custId: out[i].substring(out[i].indexOf(":",out[i].indexOf(user.password))+1)});
+							socket.emit('connStat', {use: user,custId: out[i].split(":")[2]});
 							success=true;
 							fs.close(fd,function(err){console.log(err);});
 							break;

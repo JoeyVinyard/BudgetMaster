@@ -24,7 +24,7 @@ function addMarker(location, name, priceLevel){
 
 $(document).ready(function() {
     var socket = io("http://localhost:3000");
-
+    
     socket.on("create-map", function(loc) {
         createMap(loc);
     });
