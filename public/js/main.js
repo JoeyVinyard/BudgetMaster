@@ -34,14 +34,6 @@ function addMarker(location, name, priceLevel){
 	});
 }
 
-<<<<<<< HEAD
-// $(document).ready(function() {
-//     var socket = io("http://localhost:3000");
-
-//     socket.on("create-map", function(loc) {
-//         createMap(loc);
-//     });
-=======
 $(document).ready(function() {
     var socket = io("http://localhost:3000");
 
@@ -53,7 +45,6 @@ $(document).ready(function() {
     socket.on("create-map", function(loc) {
         createMap(loc);
     });
->>>>>>> 4e048ca09d26c7c12bfae615a1318a00468062cf
 
 //     socket.on("add-marker", function(marker) {
 //         addMarker(marker.location, marker.name, marker.price);
