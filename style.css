@@ -1,0 +1,111 @@
+
+:root {
+    --bg-light: rgb(248, 246, 214);
+    --bg-off-light: rgb(255, 241, 139);
+    --bg-dark: rgb(34, 70, 49);
+    --bg-extra-dark: rgb(17, 25, 24);
+
+    --text-light: var(--bg-light);
+    --text-dark: rgb(47, 36, 29);
+}
+
+html, * {
+    margin: 0;
+    padding: 0;
+
+    font-family: "Overpass", sans-serif;
+}
+
+nav {
+    z-index: 2;
+
+    padding: 0.75em 5em;
+
+    background: var(--bg-dark);
+
+    display: flex;
+    flex-flow: row nowrap;
+
+    justify-content: space-between;
+    align-items: stretch;
+
+    box-shadow: 0px 0px 10px var(--bg-extra-dark) inset;
+}
+
+nav .logo {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+
+    font-size: 2em;
+
+    color: var(--text-light);
+    letter-spacing: 3px;
+}
+
+nav .logo img {
+    margin-left: 0.5em;
+    width: 2em;
+
+    filter: grayscale(100%) brightness(1000%);
+}
+
+nav .links {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+
+    padding-left: 2em;
+}
+
+nav .links a {
+    margin: 0 1em;
+
+    font-size: 1.25em;
+
+    color: white;
+    text-transform: uppercase;
+    text-decoration: none;
+    letter-spacing: 2px;
+
+    border-bottom: 1px solid white;
+    border-bottom-width: 0;
+    transition: all 0.2s ease;
+}
+
+nav .links a:hover {
+    border-bottom-width: 4px;
+}
+
+.main {
+    background: url("img/banner-bg.jpg");
+    background-size: cover;
+}
+
+header {
+    padding: 6em 6em;
+    margin-bottom: 3em;
+
+    text-align: center;
+
+    color: var(--text-light);
+
+    border-top: 2px solid gold;
+}
+
+header .banner-title {
+    margin-bottom: 0.75em;
+
+    font-family: "Cinzel", serif;
+    font-size: 4em;
+    letter-spacing: 10px;
+}
+
+header .banner-subtitle {
+    display: inline-block;
+    padding: 1em 2em;
+
+    font-size: 2em;
+    line-height: 1.5;
+}
+
