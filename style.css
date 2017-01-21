@@ -5,9 +5,54 @@
 
     --bg-light: rgb(248, 246, 214);
     --bg-dark: rgb(34, 70, 49);
+
+    --text-light: var(--bg-light);
+    --text-dark: rgb(0, 0, 0);
 }
 
 html, * {
     margin: 0;
     padding: 0;
+}
+
+nav {
+    padding: 2em;
+
+    background: var(--bg-dark);
+
+    display: flex;
+    flex-flow: row nowrap;
+
+    justify-content: space-around;
+}
+
+nav .links a {
+    margin: 0 2em;
+    text-decoration: none;
+}
+
+.logo {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+
+    font-family: "Cinzel", serif;
+    font-size: 2em;
+
+    color: var(--text-light);
+    letter-spacing: 3px;
+}
+
+.logo img {
+    margin-left: 1em;
+    width: 2em;
+
+    filter: grayscale(100%) brightness(1000%);
+}
+
+header {
+    background: url("img/banner-bg.jpg");
+    background-size: cover;
+
+    filter: opacity(25%);
 }
