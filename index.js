@@ -1,4 +1,5 @@
-var app = require('express')();
+var express = require('express');
+var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var fs = require('fs');
@@ -10,6 +11,8 @@ var keyUrl = "?key=335c078a708beb9fffbe11ee6a51364e";
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
+
+app.use(express.static("public"));
 
 io.on('connection', function(socket){
 	console.log("connected");
@@ -396,15 +399,15 @@ function getPlacesData(name, latitude, longitude, type, radius){
 					if(place.price_level === undefined){
 						place.price_level = DEFAULT_PRICE_LEVEL;
 						//createMap(place.geometry.location); //instead socket this to the client
-                        socket.emit("create-map", place.geometry.location);
+                        //socket.emit("create-map", place.geometry.location);
 					}
 					if(originalPrice >= place.price_level && place.name != name){
 						//addMarker(place.geometry.location, place.name, place.price_level); //instead socket this to the client
-                        socket.emit("add-marker", {
+                        /*socket.emit("add-marker", {
                             location: place.geometry.location,
                             name: place.name,
                             price: place.price_level,
-                        });
+                        });*/
 					}
 				});
 			}
