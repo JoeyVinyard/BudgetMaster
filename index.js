@@ -88,7 +88,7 @@ io.on('connection', function(socket){
 								"account_number": generateRandomNumber(16)
 							}
 					},function(error, response, bdy){
-						console.log(i);
+						makeRandomPurchases(bdy.objectCreated._id,10);
 						if(!emitted){
 							emitted = true;
 							console.log("Emitting");
@@ -132,7 +132,6 @@ io.on('connection', function(socket){
 		request(baseUrl + "customers/" + user.custId + "/accounts" + keyUrl, function(error, response, bdy){
 			request(baseUrl + "accounts/" + JSON.parse(bdy)[1]._id + "/purchases" + keyUrl, function(error, response, body){
 				var data = JSON.parse(body);
-				console.log(data);
 				for(p in data){
 	//				console.log(getMerchantInfo(data[p].merchant_id, data[p].purchase_date, data[p].amount, data[p].description));
 					request(baseUrl + "enterprise/merchants/" + data[p].merchant_id + keyUrl, function(error, response, body){
@@ -150,8 +149,7 @@ io.on('connection', function(socket){
 							category: body.category[0],
 							merchant_name: body.name
 						}
-						console.log(forAndrew);
-						console.log(forCalvin);
+						//Send andrew info
 					});
 				}
 			});
@@ -274,32 +272,29 @@ var stores = ["5827c658360f81f10454a40d", "57cf75cfa73e494d8675f92c", "57cf75cea
 	      "57cf75cfa73e494d8675fa21", "57e69f8edbd83557146123ee", "57cf75cea73e494d8675f04c", "57cf75cea73e494d8675ed21",
 	      "57cf75cea73e494d8675ed3f", "57cf75cfa73e494d8675f866","57cf75cea73e494d8675ec49" ];
 
-function makeRandomPurchase(accountID, numFreakingPurchases){
+function makeRandomPurchases(accountID, numFreakingPurchases){
     for(var i = 0; i < numFreakingPurchases; i ++){
-	
-    
-	
-	var merchantID = stores[getRandomInt(0,stores.length)];
-	var medium = "balance";
-	var month = getRandomInt(1,12);
-	var day;
-	if(month == 1 || month ==  3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12){
-	    day = getRandomInt(1, 31);
-	}else if(month == 2){
-	    day = getRandomInt(1,28);
-	}else{
-	    day = getRandomInt(1,30);
-	}
-	if(month < 10)
-	    month = "0" + month.stringify();
-	if(day < 10)
-	    day = "0" + day.stringify();
+		var merchantID = stores[getRandomInt(0,stores.length)];
+		var medium = "balance";
+		var month = getRandomInt(1,12);
+		var day;
+		if(month == 1 || month ==  3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12){
+		    day = getRandomInt(1, 31);
+		}else if(month == 2){
+		    day = getRandomInt(1,28);
+		}else{
+		    day = getRandomInt(1,30);
+		}
+		if(month < 10)
+		    month = "0" + month.toString();
+		if(day < 10)
+		    day = "0" + day.toString();
 
-	var purchaseDate = "2016-" + month + "-" + day;
+		var purchaseDate = "2016-" + month + "-" + day;
 
-	var amount = getRandomDouble(5, 107.4);
-	var description = "description";
-	makePurchase(accountId, merchantID, null, purchaseDate, amount, description);
+		var amount = getRandomDouble(5, 107.4);
+		var description = "description";
+		makePurchase(accountID, merchantID, undefined, purchaseDate, amount, description);
     }
 }
 
@@ -372,7 +367,6 @@ function getMerchantInfo(merchantID, purchaseDate, amountSpent, description){
 //-----------------------
 //---Google Places API---
 //-----------------------
-
 let BASE_GOOGLE_URL = "https://maps.googleapis.com/maps/api/";
 let GOOGLE_API_KEY = "AIzaSyARogmz0eZ6aOPftL8k0tpQUmIymww0lNU";
 let DEFAULT_PRICE_LEVEL = 1.9;
@@ -420,4 +414,4 @@ function getPlacesData(name, latitude, longitude, type, radius){
 		});
 }
 
-getPlacesData("Dollar Tree", 42.429088, -76.51341959999999, "store");
+// getPlacesData("Dollar Tree", 42.429088, -76.51341959999999, "store");
