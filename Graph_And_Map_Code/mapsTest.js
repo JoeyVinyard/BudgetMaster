@@ -1,29 +1,63 @@
 var request = require('request');
 
-var GOOGLE_API_KEY = "AIzaSyAzPCeLTP2ESnKs5CtOpunZacxPVE3UhfI";
+let BASE_GOOGLE_URL = "https://maps.googleapis.com/maps/api/";
+let GOOGLE_API_KEY = "AIzaSyARogmz0eZ6aOPftL8k0tpQUmIymww0lNU";
+let DEFAULT_PRICE_LEVEL = 1.9;
 
-function getPlacesData(lattitude, longitude, type, name){
-    var requestString = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + lattitude + ", " + longitude +
-	"&radius=1000&type=" + type + "&key=" + GOOGLE_API_KEY;
-    console.log(requestString);
-    request(requestString, function(error, response, body){
-	
-	if (!error && response.statusCode == 200) {
-	    bodyJson = JSON.parse(body);
-	    console.log(bodyJson);
-	    var places = bodyJson.results;
-	    places.forEach(function(p){
-		if(p.name == name){
-		    return;
-		}
-		console.log(p.name);
-		console.log(p.vicinity);
-		console.log(p.price_level);
-	    });
-	    //console.log(body); // Show the HTML for the Modulus homepage.
+var map; //google map element
+
+function getPlacesData(name, latitude, longitude, type, radius){
+	if(type === undefined){
+		type = "food";
 	}
-    });
+	if(radius === undefined){
+		radius = 1000;
+	}
+    var requestString = BASE_GOOGLE_URL +
+    "place/nearbysearch/json?location=" + latitude + ", " + longitude +
+	"&radius=" + radius + "&type=" + type + "&key=" + GOOGLE_API_KEY;
     
+    request(requestString,
+    	function(error, response, body){
+    		var originalPrice;
+			if (!error && response.statusCode == 200){
+				var places = JSON.parse(body).results;
+			    places.forEach(function(place){
+					if(place.name == name){
+						originalPrice = place.price_level;
+					    return;
+					}
+				});
+				places.forEach(function(place){
+					if(place.price_level === undefined){
+						place.price_level = DEFAULT_PRICE_LEVEL;
+						createMap(place.geometry.location);
+					}
+					if(originalPrice >= place.price_level && place.name != name){
+						addMarker(place.geometry.location, place.name, place.price_level);
+					}
+				});
+			}
+		});
 }
 
-getPlacesData(35.907,-79.046, "food", "Dunkin' Donuts");
+function createMap(center){
+	map = new google.maps.Map(document.getElementById("map"), {
+		center
+	});
+}
+
+function addMarker(location, name, priceLevel){
+	var marker = new google.maps.Marker({
+		position: location,
+		map,
+		title: name
+	});
+	marker.addListener("click", function(){
+		new google.maps.InfoWindow({
+			content: "<p>" + name + "</p><p>Price: " + Array(Math.ceil(priceLevel)+1).join("$") + "</p>"
+		}).open(map, marker);
+	});
+}
+
+getPlacesData("Dollar Tree", 42.429088, -76.51341959999999, "store");
