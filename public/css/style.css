@@ -4,8 +4,7 @@
     --bg-off-light: rgb(255, 241, 167);
     --bg-off-super-light: rgb(248, 242, 206);
     --bg-off-white: rgb(252, 250, 241);
-    --bg-dark: rgb(34, 70, 49);
-    --bg-extra-dark: rgb(17, 25, 24);
+    --bg-dark: rgb(34, 70, 49); --bg-extra-dark: rgb(17, 25, 24);
 
     --text-light: var(--bg-light);
     --text-dark: rgb(47, 36, 29);
@@ -89,7 +88,7 @@ nav .links a:hover {
 }
 
 .main {
-    background: url("img/banner-bg.jpg");
+    background: url("../img/banner-bg.jpg");
     background-size: cover;
 
     padding-bottom: 3em;
