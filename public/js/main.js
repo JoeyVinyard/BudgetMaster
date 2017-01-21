@@ -16,3 +16,15 @@ function addMarker(location, name, priceLevel){
 		}).open(map, marker);
 	});
 }
+
+$(document).ready(function() {
+    var socket = io("http://localhost:3000");
+
+    socket.on("create-map", function(loc) {
+        createMap(loc);
+    });
+
+    socket.on("add-marker", function(marker) {
+        addMarker(marker.location, marker.name, marker.price);
+    });
+});
