@@ -1,0 +1,13 @@
+
+:root {
+    --main-green: rgb(251, 225, 34);
+    --main-gold: rgb(3, 95, 29);
+
+    --bg-light: rgb(248, 246, 214);
+    --bg-dark: rgb(34, 70, 49);
+}
+
+html, * {
+    margin: 0;
+    padding: 0;
+}
