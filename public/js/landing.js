@@ -13,7 +13,8 @@ $(document).ready(function() {
         console.log(user);
     });
 
-    $(".log-btn").click(function(event) {
+    $(".login-btn").click(function(event) {
+        alert("AA");
         socket.emit("log", {
             username: $(".login-name").val().trim(),
             password: $(".login-password").val().trim(),
