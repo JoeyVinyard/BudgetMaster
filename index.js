@@ -190,21 +190,33 @@ function getPurchases(accountID){
 		function(error, response, body){
 			var data = JSON.parse(body);
 			for(p in data){
-				console.log(getMerchantInfo(data[p].merchant_id));
+				console.log(getMerchantInfo(data[p].merchant_id, data[p].purchase_date, data[p].amount, data[p].description));
 			}
 		});
 }
 
 //getMerchantInfo("57cf75cea73e494d8675ec49");
 
-function getMerchantInfo(merchantID){
+function getMerchantInfo(merchantID, purchaseDate, amountSpent, description){
 	//get lat, lng, category
 	request(baseUrl + "enterprise/merchants/" + merchantID + keyUrl,
 		function(error, response, body){
 			body = JSON.parse(body); //for some reason it comes back as a string
-			console.log(body.geocode.lat);
-			console.log(body.geocode.lng);
-			console.log(body.category[0]); //first category
-			console.log(body.name); //name of establishment
+			var forAndrew = {
+				merchant_name: body.name,
+				category: body.category[0],
+				amount_spent: amountSpent,
+				purchase_date: purchaseDate
+			}
+			var forCalvin = {
+				lat: body.geocode.lat,
+				lng: body.geocode.lng,
+				category: body.category[0],
+				merchant_name: body.name
+			}
 		});
 }
+
+//-----------------------
+//---Google Places API---
+//-----------------------
