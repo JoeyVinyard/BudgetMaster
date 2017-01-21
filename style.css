@@ -2,12 +2,18 @@
 :root {
     --bg-light: rgb(248, 246, 214);
     --bg-off-light: rgb(255, 241, 167);
+    --bg-off-super-light: rgb(248, 242, 206);
+    --bg-off-white: rgb(252, 250, 241);
     --bg-dark: rgb(34, 70, 49);
     --bg-extra-dark: rgb(17, 25, 24);
 
     --text-light: var(--bg-light);
     --text-dark: rgb(47, 36, 29);
     --text-extra-dark: rgb(19, 29, 40);
+}
+
+::selection {
+    background: gold;
 }
 
 html, * {
@@ -86,7 +92,7 @@ nav .links a:hover {
     background: url("img/banner-bg.jpg");
     background-size: cover;
 
-    padding-bottom: 2em;
+    padding-bottom: 3em;
 
     border-bottom: 2px solid gold;
 }
@@ -136,12 +142,12 @@ header .banner-subtitle {
     align-items: center;
 
     padding: 1em;
-    margin: 0 7vw;
+    margin: 0 5vw;
     width: 10em;
 
     background: var(--bg-off-light);
 
-    box-shadow: 0 2px 10px var(--bg-dark);
+    box-shadow: 0 1px 10px var(--bg-extra-dark);
 }
 
 .point img {
