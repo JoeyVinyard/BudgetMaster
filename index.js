@@ -125,7 +125,34 @@ io.on('connection', function(socket){
 		});
 	});
 	socket.on('loadData',function(user){
-		console.log("It worked!",user);
+		console.log(user);
+		request(baseUrl + "customers/" + user.custId + "/accounts" + keyUrl, function(error, response, bdy){
+			request(baseUrl + "accounts/" + JSON.parse(bdy)[1]._id + "/purchases" + keyUrl, function(error, response, body){
+				var data = JSON.parse(body);
+				console.log(data);
+				for(p in data){
+	//				console.log(getMerchantInfo(data[p].merchant_id, data[p].purchase_date, data[p].amount, data[p].description));
+					request(baseUrl + "enterprise/merchants/" + data[p].merchant_id + keyUrl, function(error, response, body){
+						body = JSON.parse(body); //for some reason it comes back as a string
+						var forAndrew = {
+							merchant_name: body.name,
+							category: body.category[0],
+							amount_spent: data[p].amount,
+							purchase_date: data[p].purchase_date,
+							desc: data[p].description
+						}
+						var forCalvin = {
+							lat: body.geocode.lat,
+							lng: body.geocode.lng,
+							category: body.category[0],
+							merchant_name: body.name
+						}
+						console.log(forAndrew);
+						console.log(forCalvin);
+					});
+				}
+			});
+		});
 	});
 });
 
@@ -306,24 +333,22 @@ function makePurchase(accountID, merchantID, medium, purchaseDate, amount, descr
 				  "description": description
 			}
 	},function(error, response, body){
-		getPurchases(accountID);
+		
 	});
 }
 
 function getPurchases(accountID){
-	request(baseUrl + "accounts/" + accountID + "/purchases" + keyUrl,
-		function(error, response, body){
-			var data = JSON.parse(body);
-			for(p in data){
-				console.log(getMerchantInfo(data[p].merchant_id, data[p].purchase_date, data[p].amount, data[p].description));
-			}
-		});
+	request(baseUrl + "accounts/" + accountID + "/purchases" + keyUrl, function(error, response, body){
+		var data = JSON.parse(body);
+		for(p in data){
+			console.log(getMerchantInfo(data[p].merchant_id, data[p].purchase_date, data[p].amount, data[p].description));
+		}
+	});
 }
 
 function getMerchantInfo(merchantID, purchaseDate, amountSpent, description){
 	//get lat, lng, category
-	request(baseUrl + "enterprise/merchants/" + merchantID + keyUrl,
-		function(error, response, body){
+	request(baseUrl + "enterprise/merchants/" + merchantID + keyUrl, function(error, response, body){
 			body = JSON.parse(body); //for some reason it comes back as a string
 			var forAndrew = {
 				merchant_name: body.name,
@@ -340,9 +365,9 @@ function getMerchantInfo(merchantID, purchaseDate, amountSpent, description){
 		});
 }
 
-//-----------------------
-//---Google Places API---
-//-----------------------
+-----------------------
+---Google Places API---
+-----------------------
 
 let BASE_GOOGLE_URL = "https://maps.googleapis.com/maps/api/";
 let GOOGLE_API_KEY = "AIzaSyARogmz0eZ6aOPftL8k0tpQUmIymww0lNU";
@@ -376,9 +401,15 @@ function getPlacesData(name, latitude, longitude, type, radius){
 					if(place.price_level === undefined){
 						place.price_level = DEFAULT_PRICE_LEVEL;
 						//createMap(place.geometry.location); //instead socket this to the client
+                        socket.emit("create-map", place.geometry.location);
 					}
 					if(originalPrice >= place.price_level && place.name != name){
 						//addMarker(place.geometry.location, place.name, place.price_level); //instead socket this to the client
+                        socket.emit("add-marker", {
+                            location: place.geometry.location,
+                            name: place.name,
+                            price: place.price_level,
+                        });
 					}
 				});
 			}
