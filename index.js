@@ -61,7 +61,7 @@ http.listen(3000, function(){
 //--------------------------------------
 //--------Capital One Functions---------
 //--------------------------------------
-//createCustomer();
+createCustomer();
 function createCustomer(firstName, lastName, streetNum, streetName, city, state, zip){
 	if(firstName === undefined){
 		firstName = "Katy";
@@ -142,7 +142,6 @@ function createAccount(customerID, accountType, accountNickname, rewards, balanc
 				"account_number": generateRandomNumber(16)
 			}
 	},function(error, response, body){
-		//plug this into the database
 		makePurchase(body.objectCreated._id);
 	});
 }
@@ -189,12 +188,14 @@ function makePurchase(accountID, merchantID, medium, purchaseDate, amount, descr
 function getPurchases(accountID){
 	request(baseUrl + "accounts/" + accountID + "/purchases" + keyUrl,
 		function(error, response, body){
-			console.log(body);
-			//maybe just grab the whole object
+			var data = JSON.parse(body);
+			for(p in data){
+				console.log(getMerchantInfo(data[p].merchant_id));
+			}
 		});
 }
 
-getMerchantInfo("57cf75cea73e494d8675ec49");
+//getMerchantInfo("57cf75cea73e494d8675ec49");
 
 function getMerchantInfo(merchantID){
 	//get lat, lng, category
