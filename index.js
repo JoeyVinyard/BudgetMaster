@@ -183,7 +183,7 @@ function makePurchase(accountID, merchantID, medium, purchaseDate, amount, descr
 				  "description": description
 			}
 	},function(error, response, body){
-		console.log(response); //purchase id
+		console.log(body); //purchase id
 		//not sure if this needs to go into the database
 	});
 }
