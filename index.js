@@ -115,6 +115,7 @@ function createCustomer(firstName, lastName, streetNum, streetName, city, state,
 		});
 	});
 });
+}
 
 function createAccount(customerID, accountType, accountNickname, rewards, balance){
 	if (accountType === undefined) {
@@ -192,6 +193,16 @@ function getPurchases(customerID){
 			console.log(response["purchase_date"]);
 			console.log(response["amount"]);
 			console.log(response["description"]);
+			console.log(response["merchant_id"]);
 			//maybe just grab the whole object
 		});
 }
+
+function getMerchant(merchantID){
+	request(baseUrl + "enterprise/merchants/" + merchantID + keyUrl,
+		function(error, response, body){
+			console.log(response);
+		});
+}
+
+createCustomer();
