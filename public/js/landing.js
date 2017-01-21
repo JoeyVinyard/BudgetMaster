@@ -22,7 +22,7 @@ $(document).ready(function() {
             localStorage.customerId = user.custId;
             localStorage.userInfo = JSON.stringify(user.use);
 
-            console.log(localStorage);
+            window.location = "/main.html";
         });
     });
 

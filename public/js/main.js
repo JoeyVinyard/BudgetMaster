@@ -24,6 +24,11 @@ function addMarker(location, name, priceLevel){
 
 $(document).ready(function() {
     var socket = io("http://localhost:3000");
+
+    socket.emit("loadData", { custId: localStorage.customerId });
+    socket.on("receiveData", function(data) {
+        console.log(data);
+    });
     
     socket.on("create-map", function(loc) {
         createMap(loc);
@@ -134,12 +139,13 @@ function plotLineGraph(data){
     
 }
 
+/*
 function plotHeatMap(data){
 
     data.foreach(function(p){
-	var timeStamp = p.purchase_date;
-	var time = timeStamp.split('-');
-	plotData[Math.floor(time[2]/6)][time[1] = p.amount_spent;
+        var timeStamp = p.purchase_date;
+        var time = timeStamp.split('-');
+        //plotData[Math.floor(time[2]/6)][time[1] = p.amount_spent;
     }
 
     var graph = [
@@ -165,7 +171,7 @@ function plotHeatMap(data){
       }
     ];
     Plotly.plot(TESTER,graph);
-}
+}*/
 
 //plotHeatMap([1,.4,.6,.2,.9,0]);
 //console.log( Plotly.BUILD );

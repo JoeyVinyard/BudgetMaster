@@ -128,6 +128,8 @@ io.on('connection', function(socket){
 		});
 	});
 	socket.on('loadData',function(user){
+        console.log("loading data");
+
 		request(baseUrl + "customers/" + user.custId + "/accounts" + keyUrl, function(error, response, bdy){
 			request(baseUrl + "accounts/" + JSON.parse(bdy)[1]._id + "/purchases" + keyUrl, function(error, response, body){
 				var data = JSON.parse(body);
@@ -145,6 +147,7 @@ io.on('connection', function(socket){
 							lng: body.geocode.lng
 						}
 						//Send andrew info
+                        socket.emit("receiveData", forAndrew);
 					});
 				}
 			});
