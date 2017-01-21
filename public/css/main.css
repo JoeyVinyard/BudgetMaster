@@ -75,3 +75,7 @@ body {
     color: var(--text-dark);
     border-bottom: 2px solid var(--text-dark);
 }
+
+.card .map {
+    height: 50%;
+}

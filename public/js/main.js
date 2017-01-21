@@ -2,11 +2,22 @@
 //Google Maps Junk
 //----------------
 
+var map;
+var bounds;
+
 function createMap(center){
-	map = new google.maps.Map(document.getElementById("map"), {
+	if(center === undefined){
+		center = {			//Purdue University
+			lat: 40.424,
+    		lng: -86.929
+		}
+	}
+	map = new google.maps.Map(document.getElementsByClassName("map")[0], {
 		center,
+		zoom: 12,
 		styles
 	});
+	bounds = new google.maps.LatLngBounds();
 }
 
 function addMarker(location, name, priceLevel){
@@ -15,6 +26,7 @@ function addMarker(location, name, priceLevel){
 		map,
 		title: name
 	});
+	bounds.extend(marker.position); //auto zooms to include markers
 	marker.addListener("click", function(){
 		new google.maps.InfoWindow({
 			content: "<p>" + name + "</p><p>Price: " + Array(Math.ceil(priceLevel)+1).join("$") + "</p>"
@@ -22,6 +34,14 @@ function addMarker(location, name, priceLevel){
 	});
 }
 
+<<<<<<< HEAD
+// $(document).ready(function() {
+//     var socket = io("http://localhost:3000");
+
+//     socket.on("create-map", function(loc) {
+//         createMap(loc);
+//     });
+=======
 $(document).ready(function() {
     var socket = io("http://localhost:3000");
 
@@ -33,11 +53,12 @@ $(document).ready(function() {
     socket.on("create-map", function(loc) {
         createMap(loc);
     });
+>>>>>>> 4e048ca09d26c7c12bfae615a1318a00468062cf
 
-    socket.on("add-marker", function(marker) {
-        addMarker(marker.location, marker.name, marker.price);
-    });
-});
+//     socket.on("add-marker", function(marker) {
+//         addMarker(marker.location, marker.name, marker.price);
+//     });
+// });
 
 //this is night mode for google maps
 
@@ -143,10 +164,17 @@ function plotLineGraph(data){
 function plotHeatMap(data){
 
     data.foreach(function(p){
+<<<<<<< HEAD
         var timeStamp = p.purchase_date;
         var time = timeStamp.split('-');
         //plotData[Math.floor(time[2]/6)][time[1] = p.amount_spent;
     }
+=======
+	var timeStamp = p.purchase_date;
+	var time = timeStamp.split('-');
+	plotData[Math.floor(time[2]/6)][time[1]] = p.amount_spent;
+    });
+>>>>>>> f70d21bab5799535456b068a309ab0ca692b4684
 
     var graph = [
       {
