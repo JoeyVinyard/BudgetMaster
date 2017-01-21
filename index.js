@@ -57,24 +57,23 @@ io.on('connection', function(socket){
 				}
 				fs.appendFile(fd,"\n"+user.username+":"+user.password+":"+body.objectCreated._id,function(err){
 					if(err){
-						socket.emit('regres',"Fail");
+						socket.emit('connStat',"Fail");
 						console.log(err);
 					}
-					socket.emit('regres',"Success!");
 					fs.close(fd,function(err){console.log(err);});
 				});
 				for(var i=0;i<3;i++){
 					var type = "Credit Card";
-					var nickname = "Credit";
+					var nick = "Credit";
 					if(i == 1){
 						type = "Savings";
-						nickname = "Savings";
+						nick = "Savings";
 					}else if(i == 2){
 						type = "Checking";
-						nickname = "Checking";
+						nick = "Checking";
 					}
 					request.post({
-				        url: baseUrl + "customers/" + customerID + "/accounts" + keyUrl,
+				        url: baseUrl + "customers/" + body.objectCreated._id + "/accounts" + keyUrl,
 				        json:
 				        	{
 								"type": type,
@@ -83,8 +82,8 @@ io.on('connection', function(socket){
 								"balance": Math.floor(Math.random()*10000),
 								"account_number": generateRandomNumber(16)
 							}
-					},function(error, response, body){
-						console.log(body);
+					},function(error, response, bdy){
+						socket.emit('connStat',body.objectCreated._id);
 						//makePurchase(body.objectCreated._id);
 					});
 				}
@@ -106,16 +105,20 @@ io.on('connection', function(socket){
 					for(var i=0;i<out.length;i++){
 						out[i] = (out[i].replace(/\r/i,''));
 						if(out[i].includes(user)&&out[i].includes(pass)){
-							socket.emit('returnID',out[i].substring(out[i].indexOf(":",out[i].indexOf(pass))+1));
+							console.log(out[i].substring(out[i].indexOf(":",out[i].indexOf(pass))+1));
+							socket.emit('connStat', {use: user,custId: out[i].substring(out[i].indexOf(":",out[i].indexOf(pass))+1)});
 							fs.close(fd,function(err){console.log(err);});
 							break;
 						}
 					}
-					socket.emit('returnID',"no");
+					socket.emit('connStat',{use:"no",custId: "no"});
 				}
 			});
 		});
 	});
+	socket.on('loadData',user){
+		console.log("It worked!",user);
+	}
 });
 
 http.listen(3000, function(){
@@ -125,10 +128,6 @@ http.listen(3000, function(){
 //--------------------------------------
 //--------Capital One Functions---------
 //--------------------------------------
-<<<<<<< HEAD
-=======
-//createCustomer();
->>>>>>> 997774ba91d322745711670dcdfb4c55060184e7
 function createCustomer(firstName, lastName, streetNum, streetName, city, state, zip){
 	if(firstName === undefined){
 		firstName = "Katy";
