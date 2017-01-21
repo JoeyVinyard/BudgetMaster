@@ -6,3 +6,14 @@ Chris object to Calvin: {
 	lng: 0.00,
 	category: "string"
 }
+
+user = {
+	firstName:
+	lastName:
+	username:
+	password:
+	streetNum:
+	streetName:
+	city:
+	zip:	
+}

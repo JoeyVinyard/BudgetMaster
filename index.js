@@ -12,18 +12,87 @@ app.get('/', function(req, res){
 });
 
 io.on('connection', function(socket){
-	socket.on('reg', function(user){
-		fs.open('db.txt', 'a', function(err, fd) {
-		if (err) {
-			return console.error(err);
+	console.log("connected");
+    socket.on('reg', function(user){
+		if(user.firstName === undefined){
+			user.firstName = "Katy";
 		}
-	   	fs.appendFile(fd,"\n"+user.name+":"+user.pass+":"+user.pin,function(err){
-				if(err){
-					socket.emit('regres',"Fail");
-					console.log(err);
+		if(user.lastName === undefined){
+			user.lastName = "Voor";
+		}
+		if(user.streetNum === undefined){
+			user.streetNum = "1234";
+		}
+		if(user.streetName === undefined){
+			user.streetName = "Elm Street";
+		}
+		if(user.city === undefined){
+			user.city = "West Lafayette";
+		}
+		if(user.state === undefined){
+			user.state = "IN";
+		}
+		if(user.zip === undefined){
+			user.zip = "12345";
+		}
+	    request.post({
+	    	url: baseUrl + "customers" + keyUrl,
+	    	json:
+				{
+				  "first_name": user.firstName,
+				  "last_name": user.lastName,
+				  "address": {
+				    "street_number": user.streetNum,
+				    "street_name": user.streetName,
+				    "city": user.city,
+				    "state": user.state,
+				    "zip": user.zip
+				  }
 				}
-				socket.emit('regres',"Success!");
-				fs.close(fd,function(err){console.log(err);});
+		}, function(error, response, body){
+			//plug this into the database
+			fs.open('db.txt', 'a', function(err, fd) {
+				if (err) {
+					return console.error(err);
+				}
+				fs.appendFile(fd,"\n"+user.username+":"+user.password+":"+body.objectCreated._id,function(err){
+					if(err){
+						socket.emit('connStat',"Fail");
+						console.log(err);
+					}
+					fs.close(fd,function(err){console.log(err);});
+				});
+				var emitted = false;
+
+				for(var i=0;i<3;i++){
+					var type = "Credit Card";
+					var nick = "Credit";
+					if(i == 1){
+						type = "Savings";
+						nick = "Savings";
+					}else if(i == 2){
+						type = "Checking";
+						nick = "Checking";
+					}
+					request.post({
+				        url: baseUrl + "customers/" + body.objectCreated._id + "/accounts" + keyUrl,
+				        json:
+				        	{
+								"type": type,
+								"nickname": nick,
+								"rewards": Math.floor(Math.random()*25),
+								"balance": Math.floor(Math.random()*10000),
+								"account_number": generateRandomNumber(16)
+							}
+					},function(error, response, bdy){
+						console.log(i);
+						if(!emitted){
+							emitted = true;
+							console.log("Emitting");
+							socket.emit('connStat',{use:user.username,custId:body.objectCreated._id});
+						}
+					});
+				}
 			});
 		});
   	});
@@ -42,15 +111,19 @@ io.on('connection', function(socket){
 					for(var i=0;i<out.length;i++){
 						out[i] = (out[i].replace(/\r/i,''));
 						if(out[i].includes(user)&&out[i].includes(pass)){
-							socket.emit('returnID',out[i].substring(out[i].indexOf(":",out[i].indexOf(pass))+1));
+							console.log(out[i].substring(out[i].indexOf(":",out[i].indexOf(pass))+1));
+							socket.emit('connStat', {use: user,custId: out[i].substring(out[i].indexOf(":",out[i].indexOf(pass))+1)});
 							fs.close(fd,function(err){console.log(err);});
 							break;
 						}
 					}
-					socket.emit('returnID',"no");
+					socket.emit('connStat',{use:"no",custId: "no"});
 				}
 			});
 		});
+	});
+	socket.on('loadData',function(user){
+		console.log("It worked!",user);
 	});
 });
 
@@ -61,7 +134,6 @@ http.listen(3000, function(){
 //--------------------------------------
 //--------Capital One Functions---------
 //--------------------------------------
-createCustomer();
 function createCustomer(firstName, lastName, streetNum, streetName, city, state, zip){
 	if(firstName === undefined){
 		firstName = "Katy";
@@ -154,6 +226,16 @@ function generateRandomNumber(length){
 	return num;
 }
 
+//5827c658360f81f10454a40d <- Pizza Hut
+//57cf75cfa73e494d8675f92c <- Walmart
+//57cf75cea73e494d8675eed2 <- Dick's Sporting Goods
+//57cf75cea73e494d8675f3e7 <- Mcdonald's
+//57cf75cfa73e494d8675fa21 <- Arby's
+//57e69f8edbd83557146123ee <- Starbucks
+//57cf75cea73e494d8675f04c <- Cosi
+//57cf75cea73e494d8675ed21 <- Target
+//57cf75cea73e494d8675ed3f <- Meijer
+//57cf75cfa73e494d8675f866 <- Texas Roadhouse
 function makePurchase(accountID, merchantID, medium, purchaseDate, amount, description){
 	if(merchantID === undefined){
 		merchantID = "57cf75cea73e494d8675ec49"; //Dunkin Donuts in NC
@@ -258,25 +340,6 @@ function getPlacesData(name, latitude, longitude, type, radius){
 				});
 			}
 		});
-}
-
-function createMap(center){
-	map = new google.maps.Map(document.getElementById("map"), {
-		center
-	});
-}
-
-function addMarker(location, name, priceLevel){
-	var marker = new google.maps.Marker({
-		position: location,
-		map,
-		title: name
-	});
-	marker.addListener("click", function(){
-		new google.maps.InfoWindow({
-			content: "<p>" + name + "</p><p>Price: " + Array(Math.ceil(priceLevel)+1).join("$") + "</p>"
-		}).open(map, marker);
-	});
 }
 
 getPlacesData("Dollar Tree", 42.429088, -76.51341959999999, "store");
