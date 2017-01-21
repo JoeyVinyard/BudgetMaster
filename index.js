@@ -3,6 +3,10 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var fs = require('fs');
 
+var request = require("request");
+var baseUrl = "http://api.reimaginebanking.com/";
+var keyUrl = "?key=335c078a708beb9fffbe11ee6a51364e";
+
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
@@ -57,11 +61,7 @@ http.listen(3000, function(){
 //--------------------------------------
 //--------Capital One Functions---------
 //--------------------------------------
-
-var request = require("request");
-var baseUrl = "http://api.reimaginebanking.com/";
-var keyUrl = "?key=335c078a708beb9fffbe11ee6a51364e";
-
+createCustomer();
 function createCustomer(firstName, lastName, streetNum, streetName, city, state, zip){
 	if(firstName === undefined){
 		firstName = "Katy";
@@ -99,22 +99,23 @@ function createCustomer(firstName, lastName, streetNum, streetName, city, state,
 			  }
 			}
 	}, function(error, response, body){
+		createAccount(body.objectCreated._id);
 		console.log("hello",body.objectCreated._id); //customer id
 		//plug this into the database
 		fs.open('db.txt', 'a', function(err, fd) {
-		if (err) {
-			return console.error(err);
-		}
-		fs.appendFile(fd,"\n"+"user.name"+":"+"user.pass"+":"+body.objectCreated._id,function(err){
-			if(err){
-				socket.emit('regres',"Fail");
-				console.log(err);
+			if (err) {
+				return console.error(err);
 			}
-			//socket.emit('regres',"Success!");
-			fs.close(fd,function(err){console.log(err);});
+			fs.appendFile(fd,"\n"+"user.name"+":"+"user.pass"+":"+body.objectCreated._id,function(err){
+				if(err){
+					socket.emit('regres',"Fail");
+					console.log(err);
+				}
+				//socket.emit('regres',"Success!");
+				fs.close(fd,function(err){console.log(err);});
+			});
 		});
 	});
-});
 }
 
 function createAccount(customerID, accountType, accountNickname, rewards, balance){
@@ -141,8 +142,10 @@ function createAccount(customerID, accountType, accountNickname, rewards, balanc
 				"account_number": generateRandomNumber(16)
 			}
 	},function(error, response, body){
-		console.log(response["_id"]); //account id
+		console.log(body.objectCreated._id); //account id
+		//makePurchase(body.objectCreated.account_number,"57cf75cea73e494d8675ec49");
 		//plug this into the database
+		makePurchase(body.objectCreated._id);
 	});
 }
 
@@ -156,7 +159,7 @@ function generateRandomNumber(length){
 
 function makePurchase(accountID, merchantID, medium, purchaseDate, amount, description){
 	if(merchantID === undefined){
-		merchantID = generateRandomNumber(24);
+		merchantID = "57cf75cea73e494d8675ec49"; //Dunkin Donuts in NC
 	}
 	if(medium === undefined){
 		medium = "balance";
@@ -181,8 +184,7 @@ function makePurchase(accountID, merchantID, medium, purchaseDate, amount, descr
 				  "description": description
 			}
 	},function(error, response, body){
-		console.log(response["_id"]); //purchase id
-		//not sure if this needs to go into the database
+		//console.log(body.objectCreated);
 	});
 }
 
@@ -204,5 +206,3 @@ function getMerchant(merchantID){
 			console.log(response);
 		});
 }
-
-createCustomer();
