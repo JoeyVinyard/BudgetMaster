@@ -62,6 +62,8 @@ io.on('connection', function(socket){
 					}
 					fs.close(fd,function(err){console.log(err);});
 				});
+				var emitted = false;
+
 				for(var i=0;i<3;i++){
 					var type = "Credit Card";
 					var nick = "Credit";
@@ -83,8 +85,12 @@ io.on('connection', function(socket){
 								"account_number": generateRandomNumber(16)
 							}
 					},function(error, response, bdy){
-						socket.emit('connStat',body.objectCreated._id);
-						//makePurchase(body.objectCreated._id);
+						console.log(i);
+						if(!emitted){
+							emitted = true;
+							console.log("Emitting");
+							socket.emit('connStat',{use:user.username,custId:body.objectCreated._id});
+						}
 					});
 				}
 			});
@@ -116,9 +122,9 @@ io.on('connection', function(socket){
 			});
 		});
 	});
-	socket.on('loadData',user){
+	socket.on('loadData',function(user){
 		console.log("It worked!",user);
-	}
+	});
 });
 
 http.listen(3000, function(){

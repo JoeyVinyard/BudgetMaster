@@ -9,6 +9,10 @@ $(document).ready(function() {
 
     var socket = io("http://localhost:3000");
 
+    socket.on('connStat', function(user){
+        console.log(user);
+    });
+
     $(".log-btn").click(function() {
         socket.emit("log", {
             username: $(".login-name").val().trim(),
