@@ -196,7 +196,6 @@ function makePurchase(accountID, merchantID, medium, purchaseDate, amount, descr
 function getPurchases(customerID){
 	request(baseUrl + "accounts/" + customerID + "/purchases" + keyUrl,
 		function(error, response, body){
-			console.log(response["_id"]); //purchase ID
 			console.log(response["purchase_date"]);
 			console.log(response["amount"]);
 			console.log(response["description"]);
@@ -205,7 +204,7 @@ function getPurchases(customerID){
 		});
 }
 
-function getMerchant(merchantID){
+function getMerchantLatLng(merchantID){
 	request(baseUrl + "enterprise/merchants/" + merchantID + keyUrl,
 		function(error, response, body){
 			console.log(response);
