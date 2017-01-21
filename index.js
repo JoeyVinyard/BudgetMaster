@@ -142,8 +142,13 @@ function createAccount(customerID, accountType, accountNickname, rewards, balanc
 				"account_number": generateRandomNumber(16)
 			}
 	},function(error, response, body){
+<<<<<<< HEAD
 		console.log(body.objectCreated._id); //account id
 		//makePurchase(body.objectCreated.account_number,"57cf75cea73e494d8675ec49");
+=======
+		console.log(body); //account id
+		makePurchase(body.objectCreated._id,"57cf75cea73e494d8675ec49");
+>>>>>>> c4ed65c45be31861b595a581edc04d48e7846d3d
 		//plug this into the database
 		makePurchase(body.objectCreated._id);
 	});
@@ -174,7 +179,7 @@ function makePurchase(accountID, merchantID, medium, purchaseDate, amount, descr
 		description = "Description";
 	}
 	request.post({
-        url: baseUrl + "accounts/" + accountID + "/purchases" + keyUrl,
+        url:baseUrl + "accounts/" + accountID + "/purchases" + keyUrl,
         json:
         	{
 				  "merchant_id": merchantID,
