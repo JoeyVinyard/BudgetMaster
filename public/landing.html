@@ -26,7 +26,7 @@
                 <img src="img/logo.png">
             </section>
             <section class="links">
-                <a href="#register-form" rel="modal:open">Login</a>
+                <a href="#login-form" rel="modal:open">Login</a>
                 <a href="#register-form" rel="modal:open">Register</a>
                 <a href="/about">About</a>
                 <a href="/contact">Contact Us</a>
@@ -56,44 +56,56 @@
         </div>
     </body>
 
-    <form id="register-form" class="modal">
-        <h1 class="title">Register</h1>
+    <div class="modal-wrapper">
+        <form id="register-form" class="modal">
+            <h1 class="title">Register</h1>
+            <div>
+                <h2>Username</h2>
+                <input class="reg-username">
+            </div>
+            <div>
+                <h2>Password</h2>
+                <input class="reg-password">
+            </div>
+            <div>
+                <h2>Fullname</h2>
+                <input class="reg-fullname">
+            </div>
+            <div>
+                <h2>Street Address</h2>
+                <input class="reg-address">
+            </div>
+            <div>
+                <h2>City</h2>
+                <input class="reg-city">
+            </div>
+            <div>
+                <h2>State</h2>
+                <input class="reg-state">
+            </div>
+            <div>
+                <h2>Zip Code</h2>
+                <input class="reg-zipcode">
+            </div>
 
-        <div>
-            <h2>Username</h2>
-            <input class="reg-username">
-        </div>
+            <button class="reg-btn">Register</button>
+        </form>
+    </div>
 
-        <div>
-            <h2>Password</h2>
-            <input class="reg-password">
-        </div>
+    <div class="modal-wrapper">
+        <form id="login-form" class="modal">
+            <h1 class="title">Login</h1>
 
-        <div>
-            <h2>Fullname</h2>
-            <input class="reg-fullname">
-        </div>
+            <div>
+                <h2>Username</h2>
+                <input class="login-username">
+            </div>
+            <div>
+                <h2>Password</h2>
+                <input class="login-password">
+            </div>
 
-        <div>
-            <h2>Street Address</h2>
-            <input class="reg-address">
-        </div>
-
-        <div>
-            <h2>City</h2>
-            <input class="reg-city">
-        </div>
-
-        <div>
-            <h2>State</h2>
-            <input class="reg-state">
-        </div>
-
-        <div>
-            <h2>Zip Code</h2>
-            <input class="reg-zipcode">
-        </div>
-
-        <button class="reg-btn">Register</button>
-    </form>
+            <button class="login-btn">Login</button>
+        </form>
+    </div>
 </html>

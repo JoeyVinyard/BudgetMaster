@@ -9,6 +9,13 @@ $(document).ready(function() {
 
     var socket = io("http://localhost:3000");
 
+    $(".log-btn").click(function() {
+        socket.emit("log", {
+            username: $(".login-name").val().trim(),
+            password: $(".login-password").val().trim(),
+        });
+    });
+
     $(".reg-btn").click(function() {
         var fullAddress = $(".reg-address").val().split(/\s+/);
 

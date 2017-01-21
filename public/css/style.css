@@ -170,6 +170,10 @@ input {
     font-family: "Overpass", sans-serif;
 }
 
+.modal-wrapper {
+    display: none;
+}
+
 .modal {
     background: var(--bg-light);
 }
