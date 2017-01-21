@@ -115,7 +115,7 @@ io.on('connection', function(socket){
 					for(var i=0;i<out.length;i++){
 						out[i] = (out[i].replace(/\r/i,''));
 						if(out[i].includes(user.username)&&out[i].includes(user.password)){
-							socket.emit('connStat', {use: user,custId: out[i].substring(out[i].indexOf(":",out[i].indexOf(user.password))+1)});
+							socket.emit('connStat', {use: user,custId: out[i].split(":")[2]});
 							success=true;
 							fs.close(fd,function(err){console.log(err);});
 							break;
@@ -128,7 +128,6 @@ io.on('connection', function(socket){
 		});
 	});
 	socket.on('loadData',function(user){
-		console.log(user);
 		request(baseUrl + "customers/" + user.custId + "/accounts" + keyUrl, function(error, response, bdy){
 			request(baseUrl + "accounts/" + JSON.parse(bdy)[1]._id + "/purchases" + keyUrl, function(error, response, body){
 				var data = JSON.parse(body);

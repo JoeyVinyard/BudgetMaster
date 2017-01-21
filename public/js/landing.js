@@ -9,17 +9,20 @@ $(document).ready(function() {
 
     var socket = io("http://localhost:3000");
 
-    socket.on('connStat', function(user){
-        console.log("hi",user);
-        socket.emit('loadData', user);
-    });
-
     $(".login-btn").click(function(event) {
         event.preventDefault();
         console.log($(".login-username").val().trim(),$(".login-password").val().trim());
         socket.emit("log", {
             username: $(".login-username").val().trim(),
             password: $(".login-password").val().trim(),
+        });
+        socket.on('connStat', function(user){
+            //socket.emit('loadData', user);
+            console.log(user);
+            localStorage.customerId = user.custId;
+            localStorage.userInfo = JSON.stringify(user.use);
+
+            console.log(localStorage);
         });
     });
 
