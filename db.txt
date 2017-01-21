@@ -11,10 +11,3 @@ user.name:user.pass:588382bb1756fc834d8eb762
 user.name:user.pass:588382cd1756fc834d8eb764
 user.name:user.pass:588382ff1756fc834d8eb766
 user.name:user.pass:588384541756fc834d8eb77e
-
-user.name:user.pass:58838a831756fc834d8eb79a
-user.name:user.pass:58838aab1756fc834d8eb79d
-user.name:user.pass:58838af21756fc834d8eb7a0
-user.name:user.pass:58838b011756fc834d8eb7a3
-user.name:user.pass:58838b341756fc834d8eb7a7
-user.name:user.pass:58838b651756fc834d8eb7aa
