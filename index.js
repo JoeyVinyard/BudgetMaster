@@ -12,7 +12,8 @@ app.get('/', function(req, res){
 });
 
 io.on('connection', function(socket){
-	socket.on('reg', function(user){
+	console.log("connected");
+    socket.on('reg', function(user){
 		if(user.firstName === undefined){
 			user.firstName = "Katy";
 		}
@@ -101,7 +102,7 @@ http.listen(3000, function(){
 //--------------------------------------
 //--------Capital One Functions---------
 //--------------------------------------
-createCustomer();
+//createCustomer();
 function createCustomer(firstName, lastName, streetNum, streetName, city, state, zip){
 	if(firstName === undefined){
 		firstName = "Katy";

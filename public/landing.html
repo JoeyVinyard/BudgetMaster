@@ -9,7 +9,15 @@
         <link href="https://fonts.googleapis.com/css?family=Cinzel" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css?family=Overpass" rel="stylesheet">
 
+        <link rel="stylesheet" href="deps/jquery.modal.min.css">
         <link rel="stylesheet" href="css/style.css">
+
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+        <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+
+        <script src="deps/jquery.modal.min.js"></script>
+
+        <script src="js/landing.js"></script>
     </head>
     <body>
         <nav>
@@ -18,8 +26,8 @@
                 <img src="img/logo.png">
             </section>
             <section class="links">
-                <a href="/login">Login</a>
-                <a href="/register">Register</a>
+                <a href="#register-form" rel="modal:open">Login</a>
+                <a href="#register-form" rel="modal:open">Register</a>
                 <a href="/about">About</a>
                 <a href="/contact">Contact Us</a>
             </section>
@@ -47,4 +55,45 @@
             </section>
         </div>
     </body>
+
+    <form id="register-form" class="modal">
+        <h1 class="title">Register</h1>
+
+        <div>
+            <h2>Username</h2>
+            <input class="reg-username">
+        </div>
+
+        <div>
+            <h2>Password</h2>
+            <input class="reg-password">
+        </div>
+
+        <div>
+            <h2>Fullname</h2>
+            <input class="reg-fullname">
+        </div>
+
+        <div>
+            <h2>Street Address</h2>
+            <input class="reg-address">
+        </div>
+
+        <div>
+            <h2>City</h2>
+            <input class="reg-city">
+        </div>
+
+        <div>
+            <h2>State</h2>
+            <input class="reg-state">
+        </div>
+
+        <div>
+            <h2>Zip Code</h2>
+            <input class="reg-zipcode">
+        </div>
+
+        <button class="reg-btn">Register</button>
+    </form>
 </html>

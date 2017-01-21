@@ -163,3 +163,36 @@ header .banner-subtitle {
 
     text-align: center;
 }
+
+/* Modals */
+input {
+    padding: 0.5em 1em;
+    font-family: "Overpass", sans-serif;
+}
+
+.modal {
+    background: var(--bg-light);
+}
+
+.modal .title {
+    text-align: center;
+    border-bottom: 2px solid var(--bg-dark);
+
+    margin-bottom: 1em;
+}
+
+.modal > div {
+    margin: 1em 0;
+}
+
+.modal > div:first-child {
+    margin-top: 0;
+}
+
+.modal h2 {
+
+}
+
+.modal > button {
+
+}
