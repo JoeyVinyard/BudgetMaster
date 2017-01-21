@@ -9,11 +9,13 @@ $(document).ready(function() {
 
     var socket = io("http://localhost:3000");
 
-    $(".log-btn").click(function() {
+    $(".log-btn").click(function(event) {
         socket.emit("log", {
             username: $(".login-name").val().trim(),
             password: $(".login-password").val().trim(),
         });
+
+        event.preventDefault();
     });
 
     $(".reg-btn").click(function() {
@@ -37,5 +39,7 @@ $(document).ready(function() {
             city: $(".reg-city").val(),
             zip: $(".reg-zipcode").val(),
         });
+
+        event.preventDefault();
     });
 });
