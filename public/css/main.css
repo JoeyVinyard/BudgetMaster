@@ -72,6 +72,8 @@ body {
     margin-bottom: 0.5em;
 
     font-size: 1.75em;
+    letter-spacing: 2px;
+    text-transform: uppercase;
 
     color: var(--text-dark);
     border-bottom: 2px solid var(--text-dark);

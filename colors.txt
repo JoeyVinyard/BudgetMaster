@@ -1,8 +1,0 @@
-# List of used colors
-
-Main 1: rgb(251, 225, 34)
-Main 2: rgb(3, 95, 29)
-
-Light Background: #
-Dark Background: #
-
