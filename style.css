@@ -7,6 +7,7 @@
 
     --text-light: var(--bg-light);
     --text-dark: rgb(47, 36, 29);
+    --text-extra-dark: rgb(19, 29, 40);
 }
 
 html, * {
@@ -152,6 +153,8 @@ header .banner-subtitle {
     margin-top: 1em;
     font-size: 1.3em;
     line-height: 1.5;
+
+    color: var(--text-extra-dark);
 
     text-align: center;
 }
