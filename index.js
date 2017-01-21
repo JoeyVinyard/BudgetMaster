@@ -228,16 +228,51 @@ function generateRandomNumber(length){
 	return num;
 }
 
-//5827c658360f81f10454a40d <- Pizza Hut
-//57cf75cfa73e494d8675f92c <- Walmart
-//57cf75cea73e494d8675eed2 <- Dick's Sporting Goods
-//57cf75cea73e494d8675f3e7 <- Mcdonald's
-//57cf75cfa73e494d8675fa21 <- Arby's
-//57e69f8edbd83557146123ee <- Starbucks
-//57cf75cea73e494d8675f04c <- Cosi
-//57cf75cea73e494d8675ed21 <- Target
-//57cf75cea73e494d8675ed3f <- Meijer
-//57cf75cfa73e494d8675f866 <- Texas Roadhouse
+// <- Pizza Hut
+// <- Walmart
+// <- Dick's Sporting Goods
+// <- Mcdonald's
+// <- Arby's
+// <- Starbucks
+// <- Cosi
+// <- Target
+// <- Meijer
+// <- Texas Roadhouse
+
+var stores = ["5827c658360f81f10454a40d", "57cf75cfa73e494d8675f92c", "57cf75cea73e494d8675eed2", "57cf75cea73e494d8675f3e7",
+	      "57cf75cfa73e494d8675fa21", "57e69f8edbd83557146123ee", "57cf75cea73e494d8675f04c", "57cf75cea73e494d8675ed21",
+	      "57cf75cea73e494d8675ed3f", "57cf75cfa73e494d8675f866","57cf75cea73e494d8675ec49" ];
+
+function makeRandomPurchas(accountID){
+    var merchantID = stores[getRandomInt(0,stores.length)];
+    var medium = "balance";
+    var month = getRandomInt(1,12);
+    var day;
+    if(month == 1 || month ==  3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12){
+	day = getRandomInt(1, 31);
+    }else if(month == 2){
+	day = getRandomInt(1,28);
+    }else{
+	day = getRandomInt(1,30);
+    }
+    if(month < 10)
+	month = "0" + month.stringify();
+    if(day < 10)
+	day = "0" + day.stringify();
+
+    var purchaseDate = "2016-" + month + "-" + day;
+
+    var amount = getRandomArbitrary(5, 107.4);
+    var description = "description";
+    makePurchases(accountId, merchantID, medium, purchaseDate, amount, description);
+}
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+function getRandomArbitrary(min, max) {
+    return Math.random() * (max - min) + min;
+}
 function makePurchase(accountID, merchantID, medium, purchaseDate, amount, description){
 	if(merchantID === undefined){
 		merchantID = "57cf75cea73e494d8675ec49"; //Dunkin Donuts in NC
