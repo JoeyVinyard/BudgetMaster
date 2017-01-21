@@ -290,7 +290,7 @@ function getPlacesData(name, latitude, longitude, type, radius){
 		type = "food";
 	}
 	if(radius === undefined){
-		radius = 1000;
+		radius = 500;
 	}
     var requestString = BASE_GOOGLE_URL +
     "place/nearbysearch/json?location=" + latitude + ", " + longitude +
