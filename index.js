@@ -332,10 +332,10 @@ function getPlacesData(name, latitude, longitude, type, radius){
 				places.forEach(function(place){
 					if(place.price_level === undefined){
 						place.price_level = DEFAULT_PRICE_LEVEL;
-						createMap(place.geometry.location); //instead socket this to the client
+						//createMap(place.geometry.location); //instead socket this to the client
 					}
 					if(originalPrice >= place.price_level && place.name != name){
-						addMarker(place.geometry.location, place.name, place.price_level); //instead socket this to the client
+						//addMarker(place.geometry.location, place.name, place.price_level); //instead socket this to the client
 					}
 				});
 			}
