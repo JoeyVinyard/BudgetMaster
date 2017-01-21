@@ -49,8 +49,6 @@ io.on('connection', function(socket){
 				  }
 				}
 		}, function(error, response, body){
-			createAccount(body.objectCreated._id);
-			console.log("hello",body.objectCreated._id); //customer id
 			//plug this into the database
 			fs.open('db.txt', 'a', function(err, fd) {
 				if (err) {
@@ -64,6 +62,31 @@ io.on('connection', function(socket){
 					socket.emit('regres',"Success!");
 					fs.close(fd,function(err){console.log(err);});
 				});
+				for(var i=0;i<3;i++){
+					var type = "Credit Card";
+					var nickname = "Credit";
+					if(i == 1){
+						type = "Savings";
+						nickname = "Savings";
+					}else if(i == 2){
+						type = "Checking";
+						nickname = "Checking";
+					}
+					request.post({
+				        url: baseUrl + "customers/" + customerID + "/accounts" + keyUrl,
+				        json:
+				        	{
+								"type": type,
+								"nickname": nick,
+								"rewards": Math.floor(Math.random()*25),
+								"balance": Math.floor(Math.random()*10000),
+								"account_number": generateRandomNumber(16)
+							}
+					},function(error, response, body){
+						console.log(body);
+						//makePurchase(body.objectCreated._id);
+					});
+				}
 			});
 		});
   	});
@@ -101,7 +124,6 @@ http.listen(3000, function(){
 //--------------------------------------
 //--------Capital One Functions---------
 //--------------------------------------
-createCustomer();
 function createCustomer(firstName, lastName, streetNum, streetName, city, state, zip){
 	if(firstName === undefined){
 		firstName = "Katy";
