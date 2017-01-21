@@ -14,15 +14,17 @@ $(document).ready(function() {
     });
 
     $(".login-btn").click(function(event) {
+        event.preventDefault();
+
         socket.emit("log", {
             username: $(".login-name").val().trim(),
             password: $(".login-password").val().trim(),
         });
-
-        event.preventDefault();
     });
 
     $(".reg-btn").click(function(event) {
+        event.preventDefault();
+
         var fullAddress = $(".reg-address").val().split(/\s+/);
 
         var addressNumber = fullAddress[0];
@@ -43,7 +45,5 @@ $(document).ready(function() {
             city: $(".reg-city").val(),
             zip: $(".reg-zipcode").val(),
         });
-
-        event.preventDefault();
     });
 });
