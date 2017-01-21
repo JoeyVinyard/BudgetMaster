@@ -13,17 +13,57 @@ app.get('/', function(req, res){
 
 io.on('connection', function(socket){
 	socket.on('reg', function(user){
-		fs.open('db.txt', 'a', function(err, fd) {
-		if (err) {
-			return console.error(err);
+		if(user.firstName === undefined){
+			user.firstName = "Katy";
 		}
-	   	fs.appendFile(fd,"\n"+user.name+":"+user.pass+":"+user.pin,function(err){
-				if(err){
-					socket.emit('regres',"Fail");
-					console.log(err);
+		if(user.lastName === undefined){
+			user.lastName = "Voor";
+		}
+		if(user.streetNum === undefined){
+			user.streetNum = "1234";
+		}
+		if(user.streetName === undefined){
+			user.streetName = "Elm Street";
+		}
+		if(user.city === undefined){
+			user.city = "West Lafayette";
+		}
+		if(user.state === undefined){
+			user.state = "IN";
+		}
+		if(user.zip === undefined){
+			user.zip = "12345";
+		}
+	    request.post({
+	    	url: baseUrl + "customers" + keyUrl,
+	    	json:
+				{
+				  "first_name": user.firstName,
+				  "last_name": user.lastName,
+				  "address": {
+				    "street_number": user.streetNum,
+				    "street_name": user.streetName,
+				    "city": user.city,
+				    "state": user.state,
+				    "zip": user.zip
+				  }
 				}
-				socket.emit('regres',"Success!");
-				fs.close(fd,function(err){console.log(err);});
+		}, function(error, response, body){
+			createAccount(body.objectCreated._id);
+			console.log("hello",body.objectCreated._id); //customer id
+			//plug this into the database
+			fs.open('db.txt', 'a', function(err, fd) {
+				if (err) {
+					return console.error(err);
+				}
+				fs.appendFile(fd,"\n"+user.username+":"+user.password+":"+body.objectCreated._id,function(err){
+					if(err){
+						socket.emit('regres',"Fail");
+						console.log(err);
+					}
+					socket.emit('regres',"Success!");
+					fs.close(fd,function(err){console.log(err);});
+				});
 			});
 		});
   	});
