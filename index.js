@@ -142,13 +142,6 @@ function createAccount(customerID, accountType, accountNickname, rewards, balanc
 				"account_number": generateRandomNumber(16)
 			}
 	},function(error, response, body){
-<<<<<<< HEAD
-		console.log(body.objectCreated._id); //account id
-		//makePurchase(body.objectCreated.account_number,"57cf75cea73e494d8675ec49");
-=======
-		console.log(body); //account id
-		makePurchase(body.objectCreated._id,"57cf75cea73e494d8675ec49");
->>>>>>> c4ed65c45be31861b595a581edc04d48e7846d3d
 		//plug this into the database
 		makePurchase(body.objectCreated._id);
 	});
@@ -189,17 +182,14 @@ function makePurchase(accountID, merchantID, medium, purchaseDate, amount, descr
 				  "description": description
 			}
 	},function(error, response, body){
-		//console.log(body.objectCreated);
+		getPurchases(accountID);
 	});
 }
 
-function getPurchases(customerID){
-	request(baseUrl + "accounts/" + customerID + "/purchases" + keyUrl,
+function getPurchases(accountID){
+	request(baseUrl + "accounts/" + accountID + "/purchases" + keyUrl,
 		function(error, response, body){
-			console.log(response["purchase_date"]);
-			console.log(response["amount"]);
-			console.log(response["description"]);
-			console.log(response["merchant_id"]);
+			console.log(body);
 			//maybe just grab the whole object
 		});
 }
