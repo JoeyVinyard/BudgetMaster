@@ -226,6 +226,16 @@ function generateRandomNumber(length){
 	return num;
 }
 
+//5827c658360f81f10454a40d <- Pizza Hut
+//57cf75cfa73e494d8675f92c <- Walmart
+//57cf75cea73e494d8675eed2 <- Dick's Sporting Goods
+//57cf75cea73e494d8675f3e7 <- Mcdonald's
+//57cf75cfa73e494d8675fa21 <- Arby's
+//57e69f8edbd83557146123ee <- Starbucks
+//57cf75cea73e494d8675f04c <- Cosi
+//57cf75cea73e494d8675ed21 <- Target
+//57cf75cea73e494d8675ed3f <- Meijer
+//57cf75cfa73e494d8675f866 <- Texas Roadhouse
 function makePurchase(accountID, merchantID, medium, purchaseDate, amount, description){
 	if(merchantID === undefined){
 		merchantID = "57cf75cea73e494d8675ec49"; //Dunkin Donuts in NC
@@ -267,7 +277,7 @@ function getPurchases(accountID){
 		});
 }
 
-//getMerchantInfo("57cf75cea73e494d8675ec49");
+
 
 function getMerchantInfo(merchantID, purchaseDate, amountSpent, description){
 	//get lat, lng, category
