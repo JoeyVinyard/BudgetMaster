@@ -1,0 +1,23 @@
+{
+  "name": "budgetmaster",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JoeyVinyard/BudgetMaster.git"
+  },
+  "author": "Joey Vinyard, Chris Coraggio, Calvin Henry, Andrew Bass",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JoeyVinyard/BudgetMaster/issues"
+  },
+  "homepage": "https://github.com/JoeyVinyard/BudgetMaster#readme",
+  "dependencies": {
+    "express": "^4.14.0",
+    "socket.io": "^1.7.2"
+  }
+}
