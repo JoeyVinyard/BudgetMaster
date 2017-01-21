@@ -3,42 +3,41 @@ let baseUrl = "http://api.reimaginebanking.com/";
 let keyUrl = "?key=335c078a708beb9fffbe11ee6a51364e";
 
 function createCustomer(firstName, lastName, streetNum, streetName, city, state, zip){
-	if(firstName === null){
+	if(firstName === undefined){
 		firstName = "Katy";
 	}
-	if(lastName === null){
+	if(lastName === undefined){
 		lastName = "Voor";
 	}
-	if(streetNum === null){
+	if(streetNum === undefined){
 		streetNum = "1234";
 	}
-	if(streetName === null){
+	if(streetName === undefined){
 		streetName = "Elm Street";
 	}
-	if(city === null){
+	if(city === undefined){
 		city = "West Lafayette";
 	}
-	if(state === null){
+	if(state === undefined){
 		state = "IN";
 	}
-	if(zip === null){
+	if(zip === undefined){
 		zip = "12345";
 	}
     request.post({
     	url: baseUrl + "customers" + keyUrl,
-    	body: JSON.stringify(
-{
-  "first_name": firstName,
-  "last_name": lastName,
-  "address": {
-    "street_number": streetNum,
-    "street_name": streetName,
-    "city": city,
-    "state": state,
-    "zip": zip
-  }
-}
-    		)
+    	json:
+			{
+			  "first_name": firstName,
+			  "last_name": lastName,
+			  "address": {
+			    "street_number": streetNum,
+			    "street_name": streetName,
+			    "city": city,
+			    "state": state,
+			    "zip": zip
+			  }
+			}
 	}, function(error, response, body){
 		console.log(response["_id"]); //customer id
 		//plug this into the database
@@ -46,21 +45,21 @@ function createCustomer(firstName, lastName, streetNum, streetName, city, state,
 }
 
 function createAccount(customerID, accountType, accountNickname, rewards, balance){
-	if (accountType === null) {
+	if (accountType === undefined) {
 		accountType = "Credit Card";
 	}
-	if(accountNickname === null){
+	if(accountNickname === undefined){
 		accountNickname = "Account";
 	}
-	if(rewards === null){
+	if(rewards === undefined){
 		rewards = 0;
 	}
-	if(balance === null){
+	if(balance === undefined){
 		balance = 0;
 	}
 	request.post({
         url: baseUrl + "customers/" + customerID + "/accounts" + keyUrl,
-        body: JSON.stringify(
+        json:
         	{
 				"type": accountType,
 				"nickname": accountNickname,
@@ -83,31 +82,31 @@ function generateRandomNumber(length){
 }
 
 function makePurchase(accountID, merchantID, medium, purchaseDate, amount, description){
-	if(merchantID === null){
+	if(merchantID === undefined){
 		merchantID = generateRandomNumber(24);
 	}
-	if(medium === null){
+	if(medium === undefined){
 		medium = "balance";
 	}
-	if(purchaseDate === null){
+	if(purchaseDate === undefined){
 		purchaseDate="2017-01-01";
 	}
-	if(amount === null){
+	if(amount === undefined){
 		amount = 0.01;
 	}
-	if(description === null){
+	if(description === undefined){
 		description = "Description";
 	}
 	request.post({
         url: baseUrl + "accounts/" + accountID + "/purchases" + keyUrl,
-        body: JSON.stringify(
+        json:
         	{
 				  "merchant_id": merchantID,
 				  "medium": medium,
 				  "purchase_date": purchaseDate,
 				  "amount": amount,
 				  "description": description
-			});
+			}
 	},function(error, response, body){
 		console.log(response["_id"]); //purchase id
 		//not sure if this needs to go into the database
