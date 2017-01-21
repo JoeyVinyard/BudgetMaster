@@ -261,25 +261,25 @@ function getMerchantInfo(merchantID, purchaseDate, amountSpent, description){
 	//get lat, lng, category
 	request(baseUrl + "enterprise/merchants/" + merchantID + keyUrl, function(error, response, body){
 			body = JSON.parse(body); //for some reason it comes back as a string
-			var forAndrew = {
-				merchant_name: body.name,
-				category: body.category[0],
-				amount_spent: amountSpent,
-				purchase_date: purchaseDate
-			}
-			var forCalvin = {
+			var forChris = {			//this is all the data needed to run through getPlacesData
 				lat: body.geocode.lat,
 				lng: body.geocode.lng,
 				category: body.category[0],
 				merchant_name: body.name
 			}
+			var forAndrew = {
+				merchant_name: body.name,
+				category: body.category[0],
+				amount_spent: amountSpent,
+				purchase_date: purchaseDate,
+				map_data: forChris
+			}
 		});
 }
 
-// -----------------------
-// ---Google Places API---
-// -----------------------
-
+//-----------------------
+//---Google Places API---
+//-----------------------
 let BASE_GOOGLE_URL = "https://maps.googleapis.com/maps/api/";
 let GOOGLE_API_KEY = "AIzaSyARogmz0eZ6aOPftL8k0tpQUmIymww0lNU";
 let DEFAULT_PRICE_LEVEL = 1.9;
