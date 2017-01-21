@@ -58,9 +58,9 @@ http.listen(3000, function(){
 //--------Capital One Functions---------
 //--------------------------------------
 
-let request = require("request");
-let baseUrl = "http://api.reimaginebanking.com/";
-let keyUrl = "?key=335c078a708beb9fffbe11ee6a51364e";
+var request = require("request");
+var baseUrl = "http://api.reimaginebanking.com/";
+var keyUrl = "?key=335c078a708beb9fffbe11ee6a51364e";
 
 function createCustomer(firstName, lastName, streetNum, streetName, city, state, zip){
 	if(firstName === undefined){
@@ -114,7 +114,7 @@ function createCustomer(firstName, lastName, streetNum, streetName, city, state,
 			fs.close(fd,function(err){console.log(err);});
 		});
 	});
-}
+});
 
 function createAccount(customerID, accountType, accountNickname, rewards, balance){
 	if (accountType === undefined) {
@@ -138,7 +138,7 @@ function createAccount(customerID, accountType, accountNickname, rewards, balanc
 				"rewards": rewards,
 				"balance": balance,
 				"account_number": generateRandomNumber(16)
-			})
+			}
 	},function(error, response, body){
 		console.log(response["_id"]); //account id
 		//plug this into the database
@@ -147,7 +147,7 @@ function createAccount(customerID, accountType, accountNickname, rewards, balanc
 
 function generateRandomNumber(length){
 	var num = "";
-	for(int i=0; i < length; i++){
+	for(var i=0; i < length; i++){
 		num += Math.floor(Math.random() * 10).toString();
 	}
 	return num;
