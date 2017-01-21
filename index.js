@@ -335,9 +335,15 @@ function getPlacesData(name, latitude, longitude, type, radius){
 					if(place.price_level === undefined){
 						place.price_level = DEFAULT_PRICE_LEVEL;
 						//createMap(place.geometry.location); //instead socket this to the client
+                        socket.emit("create-map", place.geometry.location);
 					}
 					if(originalPrice >= place.price_level && place.name != name){
 						//addMarker(place.geometry.location, place.name, place.price_level); //instead socket this to the client
+                        socket.emit("add-marker", {
+                            location: place.geometry.location,
+                            name: place.name,
+                            price: place.price_level,
+                        });
 					}
 				});
 			}
