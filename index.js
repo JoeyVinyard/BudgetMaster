@@ -359,9 +359,9 @@ function getMerchantInfo(merchantID, purchaseDate, amountSpent, description){
 		});
 }
 
------------------------
----Google Places API---
------------------------
+// -----------------------
+// ---Google Places API---
+// -----------------------
 
 let BASE_GOOGLE_URL = "https://maps.googleapis.com/maps/api/";
 let GOOGLE_API_KEY = "AIzaSyARogmz0eZ6aOPftL8k0tpQUmIymww0lNU";
@@ -410,4 +410,4 @@ function getPlacesData(name, latitude, longitude, type, radius){
 		});
 }
 
-getPlacesData("Dollar Tree", 42.429088, -76.51341959999999, "store");
+// getPlacesData("Dollar Tree", 42.429088, -76.51341959999999, "store");
