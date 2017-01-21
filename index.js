@@ -57,24 +57,25 @@ io.on('connection', function(socket){
 				}
 				fs.appendFile(fd,"\n"+user.username+":"+user.password+":"+body.objectCreated._id,function(err){
 					if(err){
-						socket.emit('regres',"Fail");
+						socket.emit('connStat',"Fail");
 						console.log(err);
 					}
-					socket.emit('regres',"Success!");
 					fs.close(fd,function(err){console.log(err);});
 				});
+				var emitted = false;
+
 				for(var i=0;i<3;i++){
 					var type = "Credit Card";
-					var nickname = "Credit";
+					var nick = "Credit";
 					if(i == 1){
 						type = "Savings";
-						nickname = "Savings";
+						nick = "Savings";
 					}else if(i == 2){
 						type = "Checking";
-						nickname = "Checking";
+						nick = "Checking";
 					}
 					request.post({
-				        url: baseUrl + "customers/" + customerID + "/accounts" + keyUrl,
+				        url: baseUrl + "customers/" + body.objectCreated._id + "/accounts" + keyUrl,
 				        json:
 				        	{
 								"type": type,
@@ -83,9 +84,13 @@ io.on('connection', function(socket){
 								"balance": Math.floor(Math.random()*10000),
 								"account_number": generateRandomNumber(16)
 							}
-					},function(error, response, body){
-						console.log(body);
-						//makePurchase(body.objectCreated._id);
+					},function(error, response, bdy){
+						console.log(i);
+						if(!emitted){
+							emitted = true;
+							console.log("Emitting");
+							socket.emit('connStat',{use:user.username,custId:body.objectCreated._id});
+						}
 					});
 				}
 			});
@@ -106,15 +111,19 @@ io.on('connection', function(socket){
 					for(var i=0;i<out.length;i++){
 						out[i] = (out[i].replace(/\r/i,''));
 						if(out[i].includes(user)&&out[i].includes(pass)){
-							socket.emit('returnID',out[i].substring(out[i].indexOf(":",out[i].indexOf(pass))+1));
+							console.log(out[i].substring(out[i].indexOf(":",out[i].indexOf(pass))+1));
+							socket.emit('connStat', {use: user,custId: out[i].substring(out[i].indexOf(":",out[i].indexOf(pass))+1)});
 							fs.close(fd,function(err){console.log(err);});
 							break;
 						}
 					}
-					socket.emit('returnID',"no");
+					socket.emit('connStat',{use:"no",custId: "no"});
 				}
 			});
 		});
+	});
+	socket.on('loadData',function(user){
+		console.log("It worked!",user);
 	});
 });
 
@@ -125,10 +134,6 @@ http.listen(3000, function(){
 //--------------------------------------
 //--------Capital One Functions---------
 //--------------------------------------
-<<<<<<< HEAD
-=======
-//createCustomer();
->>>>>>> 997774ba91d322745711670dcdfb4c55060184e7
 function createCustomer(firstName, lastName, streetNum, streetName, city, state, zip){
 	if(firstName === undefined){
 		firstName = "Katy";
@@ -221,6 +226,16 @@ function generateRandomNumber(length){
 	return num;
 }
 
+//5827c658360f81f10454a40d <- Pizza Hut
+//57cf75cfa73e494d8675f92c <- Walmart
+//57cf75cea73e494d8675eed2 <- Dick's Sporting Goods
+//57cf75cea73e494d8675f3e7 <- Mcdonald's
+//57cf75cfa73e494d8675fa21 <- Arby's
+//57e69f8edbd83557146123ee <- Starbucks
+//57cf75cea73e494d8675f04c <- Cosi
+//57cf75cea73e494d8675ed21 <- Target
+//57cf75cea73e494d8675ed3f <- Meijer
+//57cf75cfa73e494d8675f866 <- Texas Roadhouse
 function makePurchase(accountID, merchantID, medium, purchaseDate, amount, description){
 	if(merchantID === undefined){
 		merchantID = "57cf75cea73e494d8675ec49"; //Dunkin Donuts in NC
@@ -262,7 +277,7 @@ function getPurchases(accountID){
 		});
 }
 
-//getMerchantInfo("57cf75cea73e494d8675ec49");
+
 
 function getMerchantInfo(merchantID, purchaseDate, amountSpent, description){
 	//get lat, lng, category
