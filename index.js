@@ -62,6 +62,8 @@ io.on('connection', function(socket){
 					}
 					fs.close(fd,function(err){console.log(err);});
 				});
+				var emitted = false;
+
 				for(var i=0;i<3;i++){
 					var type = "Credit Card";
 					var nick = "Credit";
@@ -83,8 +85,12 @@ io.on('connection', function(socket){
 								"account_number": generateRandomNumber(16)
 							}
 					},function(error, response, bdy){
-						socket.emit('connStat',body.objectCreated._id);
-						//makePurchase(body.objectCreated._id);
+						console.log(i);
+						if(!emitted){
+							emitted = true;
+							console.log("Emitting");
+							socket.emit('connStat',{use:user.username,custId:body.objectCreated._id});
+						}
 					});
 				}
 			});
@@ -93,6 +99,7 @@ io.on('connection', function(socket){
   	socket.on('log', function(user){
 	  	fs.open('db.txt', 'r+', function(err, fd) {
 			var buf = new Buffer(1024);
+			var success = false;
 			if (err) {
 				return console.error(err);
 			}
@@ -104,21 +111,22 @@ io.on('connection', function(socket){
 					var out = (buf.slice(0, bytes).toString()).split("\n");
 					for(var i=0;i<out.length;i++){
 						out[i] = (out[i].replace(/\r/i,''));
-						if(out[i].includes(user)&&out[i].includes(pass)){
-							console.log(out[i].substring(out[i].indexOf(":",out[i].indexOf(pass))+1));
-							socket.emit('connStat', {use: user,custId: out[i].substring(out[i].indexOf(":",out[i].indexOf(pass))+1)});
+						if(out[i].includes(user.username)&&out[i].includes(user.password)){
+							socket.emit('connStat', {use: user,custId: out[i].substring(out[i].indexOf(":",out[i].indexOf(user.password))+1)});
+							success=true;
 							fs.close(fd,function(err){console.log(err);});
 							break;
 						}
 					}
-					socket.emit('connStat',{use:"no",custId: "no"});
+					if(!success)
+						socket.emit('connStat',{use:"no",custId: "no"});
 				}
 			});
 		});
 	});
-	socket.on('loadData',user){
+	socket.on('loadData',function(user){
 		console.log("It worked!",user);
-	}
+	});
 });
 
 http.listen(3000, function(){
@@ -306,8 +314,6 @@ function getPurchases(accountID){
 		});
 }
 
-
-
 function getMerchantInfo(merchantID, purchaseDate, amountSpent, description){
 	//get lat, lng, category
 	request(baseUrl + "enterprise/merchants/" + merchantID + keyUrl,
@@ -331,3 +337,46 @@ function getMerchantInfo(merchantID, purchaseDate, amountSpent, description){
 //-----------------------
 //---Google Places API---
 //-----------------------
+
+let BASE_GOOGLE_URL = "https://maps.googleapis.com/maps/api/";
+let GOOGLE_API_KEY = "AIzaSyARogmz0eZ6aOPftL8k0tpQUmIymww0lNU";
+let DEFAULT_PRICE_LEVEL = 1.9;
+
+var map; //google map element
+
+function getPlacesData(name, latitude, longitude, type, radius){
+	if(type === undefined){
+		type = "food";
+	}
+	if(radius === undefined){
+		radius = 1000;
+	}
+    var requestString = BASE_GOOGLE_URL +
+    "place/nearbysearch/json?location=" + latitude + ", " + longitude +
+	"&radius=" + radius + "&type=" + type + "&key=" + GOOGLE_API_KEY;
+    
+    request(requestString,
+    	function(error, response, body){
+    		var originalPrice;
+			if (!error && response.statusCode == 200){
+				var places = JSON.parse(body).results;
+			    places.forEach(function(place){
+					if(place.name == name){
+						originalPrice = place.price_level;
+					    return;
+					}
+				});
+				places.forEach(function(place){
+					if(place.price_level === undefined){
+						place.price_level = DEFAULT_PRICE_LEVEL;
+						//createMap(place.geometry.location); //instead socket this to the client
+					}
+					if(originalPrice >= place.price_level && place.name != name){
+						//addMarker(place.geometry.location, place.name, place.price_level); //instead socket this to the client
+					}
+				});
+			}
+		});
+}
+
+getPlacesData("Dollar Tree", 42.429088, -76.51341959999999, "store");
