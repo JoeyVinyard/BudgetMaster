@@ -3,6 +3,10 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var fs = require('fs');
 
+var request = require("request");
+var baseUrl = "http://api.reimaginebanking.com/";
+var keyUrl = "?key=335c078a708beb9fffbe11ee6a51364e";
+
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
@@ -57,11 +61,7 @@ http.listen(3000, function(){
 //--------------------------------------
 //--------Capital One Functions---------
 //--------------------------------------
-
-let request = require("request");
-let baseUrl = "http://api.reimaginebanking.com/";
-let keyUrl = "?key=335c078a708beb9fffbe11ee6a51364e";
-
+//createCustomer();
 function createCustomer(firstName, lastName, streetNum, streetName, city, state, zip){
 	if(firstName === undefined){
 		firstName = "Katy";
@@ -99,19 +99,21 @@ function createCustomer(firstName, lastName, streetNum, streetName, city, state,
 			  }
 			}
 	}, function(error, response, body){
+		createAccount(body.objectCreated._id);
 		console.log("hello",body.objectCreated._id); //customer id
 		//plug this into the database
 		fs.open('db.txt', 'a', function(err, fd) {
-		if (err) {
-			return console.error(err);
-		}
-		fs.appendFile(fd,"\n"+"user.name"+":"+"user.pass"+":"+body.objectCreated._id,function(err){
-			if(err){
-				socket.emit('regres',"Fail");
-				console.log(err);
+			if (err) {
+				return console.error(err);
 			}
-			//socket.emit('regres',"Success!");
-			fs.close(fd,function(err){console.log(err);});
+			fs.appendFile(fd,"\n"+"user.name"+":"+"user.pass"+":"+body.objectCreated._id,function(err){
+				if(err){
+					socket.emit('regres',"Fail");
+					console.log(err);
+				}
+				//socket.emit('regres',"Success!");
+				fs.close(fd,function(err){console.log(err);});
+			});
 		});
 	});
 }
@@ -138,16 +140,18 @@ function createAccount(customerID, accountType, accountNickname, rewards, balanc
 				"rewards": rewards,
 				"balance": balance,
 				"account_number": generateRandomNumber(16)
-			})
+			}
 	},function(error, response, body){
-		console.log(response["_id"]); //account id
+		console.log(body.objectCreated._id); //account id
+		//makePurchase(body.objectCreated.account_number,"57cf75cea73e494d8675ec49");
 		//plug this into the database
+		makePurchase(body.objectCreated._id);
 	});
 }
 
 function generateRandomNumber(length){
 	var num = "";
-	for(int i=0; i < length; i++){
+	for(var i=0; i < length; i++){
 		num += Math.floor(Math.random() * 10).toString();
 	}
 	return num;
@@ -155,7 +159,7 @@ function generateRandomNumber(length){
 
 function makePurchase(accountID, merchantID, medium, purchaseDate, amount, description){
 	if(merchantID === undefined){
-		merchantID = generateRandomNumber(24);
+		merchantID = "57cf75cea73e494d8675ec49"; //Dunkin Donuts in NC
 	}
 	if(medium === undefined){
 		medium = "balance";
@@ -170,7 +174,7 @@ function makePurchase(accountID, merchantID, medium, purchaseDate, amount, descr
 		description = "Description";
 	}
 	request.post({
-        url: baseUrl + "accounts/" + accountID + "/purchases" + keyUrl,
+        url:baseUrl + "accounts/" + accountID + "/purchases" + keyUrl,
         json:
         	{
 				  "merchant_id": merchantID,
@@ -180,18 +184,31 @@ function makePurchase(accountID, merchantID, medium, purchaseDate, amount, descr
 				  "description": description
 			}
 	},function(error, response, body){
-		console.log(response["_id"]); //purchase id
-		//not sure if this needs to go into the database
+		//console.log(body.objectCreated);
 	});
 }
 
 function getPurchases(customerID){
 	request(baseUrl + "accounts/" + customerID + "/purchases" + keyUrl,
 		function(error, response, body){
-			console.log(response["_id"]); //purchase ID
 			console.log(response["purchase_date"]);
 			console.log(response["amount"]);
 			console.log(response["description"]);
+			console.log(response["merchant_id"]);
 			//maybe just grab the whole object
+		});
+}
+
+getMerchantInfo("57cf75cea73e494d8675ec49");
+
+function getMerchantInfo(merchantID){
+	//get lat, lng, category
+	request(baseUrl + "enterprise/merchants/" + merchantID + keyUrl,
+		function(error, response, body){
+			body = JSON.parse(body); //for some reason it comes back as a string
+			console.log(body.geocode.lat);
+			console.log(body.geocode.lng);
+			console.log(body.category[0]); //first category
+			console.log(body.name); //name of establishment
 		});
 }

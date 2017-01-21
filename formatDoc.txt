@@ -1,1 +1,8 @@
-Chris dates to Graphs: yyyy-mm-dd
+Chris object to Calvin: {
+	purchase_date: yyyy-mm-dd,
+	amount: 0.00,
+	description: "string",
+	lat: 0.00,
+	lng: 0.00,
+	category: "string"
+}
