@@ -204,7 +204,6 @@ function makeRandomPurchases(accountID, numFreakingPurchases){
 		    day = "0" + day.toString();
 
 		var purchaseDate = "2016-" + month + "-" + day;
-
 		var amount = getRandomDouble(5, 107.4);
 		var description = "description";
 		makePurchase(accountID, merchantID, undefined, purchaseDate, amount, description);
