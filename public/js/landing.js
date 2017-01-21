@@ -17,7 +17,7 @@ $(document).ready(function() {
         event.preventDefault();
 
         socket.emit("log", {
-            username: $(".login-name").val().trim(),
+            username: $(".login-username").val().trim(),
             password: $(".login-password").val().trim(),
         });
     });
