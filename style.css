@@ -5,6 +5,7 @@
 
     --bg-light: rgb(248, 246, 214);
     --bg-dark: rgb(34, 70, 49);
+    --bg-extra-dark: rgb(17, 25, 24);
 
     --text-light: var(--bg-light);
     --text-dark: rgb(0, 0, 0);
@@ -13,46 +14,89 @@
 html, * {
     margin: 0;
     padding: 0;
+
+    font-family: "Overpass", sans-serif;
 }
 
 nav {
-    padding: 2em;
+    z-index: 2;
+
+    padding: 0.75em 5em;
 
     background: var(--bg-dark);
 
     display: flex;
     flex-flow: row nowrap;
 
-    justify-content: space-around;
+    justify-content: space-between;
+    align-items: stretch;
+
+    box-shadow: 0px 0px 10px var(--bg-extra-dark) inset;
 }
 
-nav .links a {
-    margin: 0 2em;
-    text-decoration: none;
-}
-
-.logo {
+nav .logo {
     display: flex;
     flex-flow: row nowrap;
     align-items: center;
 
-    font-family: "Cinzel", serif;
     font-size: 2em;
 
     color: var(--text-light);
     letter-spacing: 3px;
 }
 
-.logo img {
-    margin-left: 1em;
+nav .logo img {
+    margin-left: 0.5em;
     width: 2em;
 
     filter: grayscale(100%) brightness(1000%);
 }
 
+nav .links {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+
+    padding-left: 2em;
+}
+
+nav .links a {
+    margin: 0 1em;
+
+    font-size: 1.25em;
+
+    color: white;
+    text-transform: uppercase;
+    text-decoration: none;
+    letter-spacing: 2px;
+
+    border-bottom: 1px solid white;
+    border-bottom-width: 0;
+    transition: all 0.2s ease;
+}
+
+nav .links a:hover {
+    border-bottom-width: 4px;
+}
+
 header {
+    padding: 5em 6em;
+    text-align: center;
+
+    color: var(--text-light);
+
     background: url("img/banner-bg.jpg");
     background-size: cover;
 
-    filter: opacity(25%);
+    border-top: 2px solid gold;
+    border-bottom: 2px solid gold;
 }
+
+header .banner-title {
+    margin-bottom: 0.75em;
+
+    font-family: "Cinzel", serif;
+    font-size: 3.5em;
+    letter-spacing: 2px;
+}
+
