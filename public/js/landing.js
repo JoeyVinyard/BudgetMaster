@@ -15,7 +15,7 @@ $(document).ready(function() {
 
     $(".login-btn").click(function(event) {
         event.preventDefault();
-
+        console.log($(".login-username").val().trim(),$(".login-password").val().trim());
         socket.emit("log", {
             username: $(".login-username").val().trim(),
             password: $(".login-password").val().trim(),

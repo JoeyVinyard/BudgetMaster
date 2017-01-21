@@ -99,6 +99,7 @@ io.on('connection', function(socket){
   	socket.on('log', function(user){
 	  	fs.open('db.txt', 'r+', function(err, fd) {
 			var buf = new Buffer(1024);
+			var success = false;
 			if (err) {
 				return console.error(err);
 			}
@@ -110,14 +111,15 @@ io.on('connection', function(socket){
 					var out = (buf.slice(0, bytes).toString()).split("\n");
 					for(var i=0;i<out.length;i++){
 						out[i] = (out[i].replace(/\r/i,''));
-						if(out[i].includes(user)&&out[i].includes(pass)){
-							console.log(out[i].substring(out[i].indexOf(":",out[i].indexOf(pass))+1));
-							socket.emit('connStat', {use: user,custId: out[i].substring(out[i].indexOf(":",out[i].indexOf(pass))+1)});
+						if(out[i].includes(user.username)&&out[i].includes(user.password)){
+							socket.emit('connStat', {use: user,custId: out[i].substring(out[i].indexOf(":",out[i].indexOf(user.password))+1)});
+							success=true;
 							fs.close(fd,function(err){console.log(err);});
 							break;
 						}
 					}
-					socket.emit('connStat',{use:"no",custId: "no"});
+					if(!success)
+						socket.emit('connStat',{use:"no",custId: "no"});
 				}
 			});
 		});
