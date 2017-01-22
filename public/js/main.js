@@ -44,15 +44,42 @@ function addMarker(location, name, priceLevel){
 }
 
 var purchases = [];
+var days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 function sortDates(data){
   var index = Math.floor((new Date() - new Date(data.purchase_date))/604800000)
   weeks[index].push(data);
   weeks[index].sort(function(a,b){
     if(new Date(a.purchase_date)<new Date(b.purchase_date))
-      return -1;
-    else
       return 1;
-  })
+    else
+      return -1;
+  });
+  $(".purchase-list").empty();
+  weeks.forEach(function(week){
+    week.forEach(function(p){
+      var date = new Date(p.purchase_date);
+      var out = "";
+      out+=days[date.getDay()]+", "+months[date.getMonth()]+" ";
+      var dayNum = date.getDate().toString();
+      dayNum = dayNum.substring(dayNum.length-1);
+      var suff;
+      if(date.getDate()>10&&date.getDate()<15){
+        suff = "th";
+      }else if(dayNum == "1"){
+        suff = "st";
+      }else if(dayNum == "2"){
+        suff = "nd";
+      }else if(dayNum == "3"){
+        suff = "rd";
+      }else{
+        suff = "th";
+      }
+      out+=date.getDate()+suff+" "+date.getFullYear();
+      console.log(out);
+      createPurchase(p.merchant_name,out,"$"+(Math.floor(p.amount_spent*100)/100));
+    });
+  });
 }
 
 $(document).ready(function() {
@@ -100,7 +127,7 @@ function createPurchase(name, date, amountDollars) {
 
     $("<p>").text(amountDollars).appendTo(amount);
 
-    return purchase;
+    $(".purchase-list").append(purchase);
 }
 
 //this is night mode for google maps
