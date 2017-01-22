@@ -8,7 +8,7 @@ var map;
 var bounds;
 var weeks = [];
 
-for(var i=0;i<52;i++){
+for(var i=0;i<=52;i++){
   var week = [];
   weeks.push(week);
 }
@@ -50,7 +50,6 @@ var days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunda
 var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
 function sortDates(data){
-  console.log("sorting");
   data.forEach(function(d){
     var index = Math.floor((new Date() - new Date(d.purchase_date))/604800000)
     weeks[index].push(d);
@@ -103,7 +102,6 @@ $(document).ready(function() {
     socket.on("endData", function() {
       console.log("blah");
         sortDates(allData);
-
     });
 
 //     socket.on("add-marker", function(marker) {
