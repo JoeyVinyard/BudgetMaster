@@ -226,28 +226,18 @@ var stores = ["5827c658360f81f10454a40d", "57cf75cfa73e494d8675f92c", "57cf75cea
 	      "57cf75cfa73e494d8675fa21", "57e69f8edbd83557146123ee", "57cf75cea73e494d8675f04c", "57cf75cea73e494d8675ed21",
 	      "57cf75cea73e494d8675ed3f", "57cf75cfa73e494d8675f866","57cf75cea73e494d8675ec49" ];
 
-function makeRandomPurchases(accountID, numFreakingPurchases){
-    for(var i = 0; i < numFreakingPurchases; i ++){
-		var merchantID = stores[getRandomInt(0,stores.length)];
-		var medium = "balance";
-		var month = getRandomInt(1,12);
-		var day;
-		if(month == 1 || month ==  3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12){
-		    day = getRandomInt(1, 31);
-		}else if(month == 2){
-		    day = getRandomInt(1,28);
-		}else{
-		    day = getRandomInt(1,30);
-		}
-		if(month < 10)
-		    month = "0" + month.toString();
-		if(day < 10)
-		    day = "0" + day.toString();
+function getRandomDate(start, end) {
+	return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime())).toISOString().substring(0, 10);
+}
 
-		var purchaseDate = "2016-" + month + "-" + day;
-		var amount = getRandomDouble(5, 107.4);
-		var description = "description";
-		makePurchase(accountID, merchantID, undefined, purchaseDate, amount, description);
+function makeRandomPurchases(accountID, numPurchases){
+	let monthOffset = 3; //how many months we look back
+	let end = new Date();
+	let start = new Date();
+	start.setMonth(start.getMonth() - monthOffset);
+	for(var i = 0; i < numPurchases; i++){
+		makePurchase(accountID, stores[getRandomInt(0, 11)], undefined,
+			getRandomDate(start, end), getRandomDouble(5, 107.4), "description");
     }
 }
 
