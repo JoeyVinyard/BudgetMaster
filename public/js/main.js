@@ -147,26 +147,38 @@ $(document).ready(function() {
         }).reduce(function(a, b) { return a + b; }, 0);
         amountSpentThisWeek = Math.floor(amountSpentThisWeek * 100) / 100;
         setCurrentWeekExpenditures(amountSpentThisWeek, avgAmountSpent);
+
+        var data = [];
+        weeks.forEach(function(week){
+        	week.forEach(function(purchase){
+        		data.push({
+        			amount_spent: purchase.amount_spent,
+        			purchase_date: purchase.purchase_date
+        		});
+        	});
+        });
+        console.log(data);
+        plotLineGraph(data, $(".heatmap-container").get(0));
     });
 
     socket.on("addMarker", function(data) {
         addMarker(data.location, data.name, data.price, undefined);
     });
 
-	var forAndrew = [{
-					amount_spent: "1.02",
-					purchase_date: "2016-12-12",
-				},
-				{
-					amount_spent: "102",
-					purchase_date: "2016-12-16",
-				},
-				{
-					amount_spent: "13.85",
-					purchase_date: "2017-01-12",
-				},
-				];
-	plotLineGraph(forAndrew, $(".heatmap-container").get(0));
+	// var forAndrew = [{
+	// 				amount_spent: "1.02",
+	// 				purchase_date: "2016-12-12",
+	// 			},
+	// 			{
+	// 				amount_spent: "102",
+	// 				purchase_date: "2016-12-16",
+	// 			},
+	// 			{
+	// 				amount_spent: "13.85",
+	// 				purchase_date: "2017-01-12",
+	// 			},
+	// 			];
+	// plotLineGraph(forAndrew, $(".heatmap-container").get(0));
 });
 //     socket.on("add-marker", function(marker) {
 //         addMarker(marker.location, marker.name, marker.price);
@@ -277,7 +289,7 @@ var styles = [
 function plotLineGraph(data, container){
     var hover_text = [];
     for(var i = 0; i < data.length; i ++){
-	hover_text[i] = "$" + data[i].amount_spent;
+	hover_text[i] = "$" + Math.floor(100 * data[i].amount_spent) / 100;
 	
     }
     var amountsSpent = data.map(function(datum){
