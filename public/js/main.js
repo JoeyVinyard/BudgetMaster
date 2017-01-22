@@ -72,6 +72,22 @@ $(document).ready(function() {
 //     socket.on("add-marker", function(marker) {
 //         addMarker(marker.location, marker.name, marker.price);
 //     });
+	initializePlotlyElements();
+
+	var forAndrew = [{
+					amount_spent: "1.02",
+					purchase_date: "2016-12-12",
+				},
+				{
+					amount_spent: "102",
+					purchase_date: "2016-12-16",
+				},
+				{
+					amount_spent: "13.85",
+					purchase_date: "2017-01-12",
+				},
+				];
+	plotHeatMap(forAndrew);
 });
 
 function createPurchase(name, date, amountDollars) {
@@ -174,10 +190,20 @@ var styles = [
 //  Plotly Junk
 //----------------
 
-var HEATMAP = $(".heatmap");
-var THISWEEK = $("#thisweek");
-var LASTWEEK = $("#lastweek");
-var AVGWEEK = $("#avgweek");
+var HEATMAP;
+var THISWEEK;
+var LASTWEEK;
+var AVGWEEK;
+
+function initializePlotlyElements(){
+	HEATMAP = $(".heatmap-container").get(0);
+	console.log(HEATMAP);
+	// THISWEEK = $("thisweek").get(0);
+	// LASTWEEK = $("lastweek").get(0);
+	// AVGWEEK = $("avgweek").get(0);
+}
+
+
 var x;
 var plotData = new Array(4);
 for(x = 0; x < plotData.length; x++){
@@ -260,18 +286,4 @@ function plotHeatMap(data){
     Plotly.plot(HEATMAP,graph);
 }
 
-var forAndrew = [{
-					amount_spent: "1.02",
-					purchase_date: "2016-12-12",
-				},
-				{
-					amount_spent: "102",
-					purchase_date: "2016-12-16",
-				},
-				{
-					amount_spent: "13.85",
-					purchase_date: "2017-01-12",
-				},
-				];
-plotHeatMap(forAndrew);
 //console.log( Plotly.BUILD );
