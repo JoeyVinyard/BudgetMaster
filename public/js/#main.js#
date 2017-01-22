@@ -245,7 +245,7 @@ function plotLineGraph(data, container){
     });
 
     var purchasesTrace = [{
- //   	x: dates,
+    	x: dates,
     	y: amountsSpent,
 	hoverformat: "$",
 	showticklabels: false,
