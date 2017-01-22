@@ -4,6 +4,12 @@
 
 var map;
 var bounds;
+var weeks = [];
+
+for(var i=0;i<52;i++){
+  var week = [];
+  weeks.push(week);
+}
 
 function createMap(center){
 	if(center === undefined){
@@ -35,12 +41,24 @@ function addMarker(location, name, priceLevel){
 	});
 }
 
+function sortDates(data){
+  var index = Math.floor((new Date() - new Date(data.purchase_date))/604800000)
+  weeks[index].push(data);
+  weeks[index].sort(function(a,b){
+    if(new Date(a.purchase_date)<new Date(b.purchase_date))
+      return -1;
+    else
+      return 1;
+  })
+}
+
 $(document).ready(function() {
     var socket = io("http://localhost:3000");
 
     socket.emit("loadData", { custId: localStorage.customerId });
     socket.on("receiveData", function(data) {
         console.log(data);
+        sortDates(data)
     });
     
     socket.on("create-map", function(loc) {
