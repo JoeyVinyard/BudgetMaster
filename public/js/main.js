@@ -408,12 +408,14 @@ function plotLineGraph(data, container){
 
 function setCurrentWeekExpenditures(amountSpent, averageAmountSpent){
     $(".this-week p").text("$" + amountSpent);
+    var oldShadow = $(".this-week").css("box-shadow") + ", ";
+
     if(amountSpent < .9 * averageAmountSpent){
-        $(".this-week p").css("box-shadow", "inset 0 0 10px green");//color is green
+        $(".this-week").css("box-shadow", oldShadow + "inset 0 0 10px green");//color is green
     }else if(amountSpent < 1.1 * averageAmountSpent){
-        $(".this-week p").css("box-shadow", "inset 0 0 10px yellow");//color is yellow
+        $(".this-week").css("box-shadow", oldShadow + "inset 0 0 10px yellow");//color is yellow
     }else{
-        $(".this-week p").css("box-shadow", "inset 0 0 10px red");//color is red
+        $(".this-week").css("box-shadow", oldShadow + "inset 0 0 10px red");//color is red
     }
 }
 
@@ -432,17 +434,20 @@ function calcAvgAmountSpent(weeks){
 
 function setLastWeekExpenditures(amountSpent, averageAmountSpent){
     $(".last-week p").text("$" + amountSpent);
-    console.log(amountSpent);
+    var oldShadow = $(".last-week").css("box-shadow") + ", ";
+
     if(amountSpent < .9 * averageAmountSpent){
-        $(".last-week p").css("box-shadow", "inset 0 0 10px green");
+        $(".last-week").css("box-shadow", oldShadow + "inset 0 0 10px green");
     }else if(amountSpent < 1.1 * averageAmountSpent){
-        $(".last-week p").css("box-shadow", "inset 0 0 10px yellow");
+        $(".last-week").css("box-shadow", oldShadow + "inset 0 0 10px yellow");
     }else{
-        $(".last-week p").css("box-shadow", "inset 0 0 10px red");
+        $(".last-week").css("box-shadow", oldShadow + "inset 0 0 10px red");
     }
 }
 
 function setAvgAmountSpent(averageAmountSpent){
+    var oldShadow = $(".week-average").css("box-shadow") + ", ";
+
     $(".week-average p").text("$" + averageAmountSpent);
-    $(".week-average p").css("box-shadow", "inset 0 0 10px yellow");
+    $(".week-average").css("box-shadow", oldShadow + "inset 0 0 10px yellow");
 }

@@ -1,5 +1,4 @@
 
-<<<<<<< HEAD
 joeyvinyard:joeypass:5883cdd41756fc834d8ebdb5
 joeyvinyard:joeypass:5883cde71756fc834d8ebdd7
 joeyvinyard:joeypass:5883cdfd1756fc834d8ebdf9
@@ -15,18 +14,5 @@ yo:yo:588416961756fc834d8ebfcb
 asdf:asdf:58841d301756fc834d8ec09b
 asdfa:asdf:58841d621756fc834d8ec2aa
 asdfaa:asdf:58841d721756fc834d8ec4c3
-<<<<<<< HEAD
-joeyjoey:password:588424e31756fc834d8ec779
-=======
 
-andbass:password:5884254b1756fc834d8ecba6
->>>>>>> 9cdb2554431e643424e7d8217f175ec6475a09db
-
-andbass:password:588428981756fc834d8ed051
-andbass2:password:58842c701756fc834d8ed500
-andbass3:password:58843b541756fc834d8eedba
-=======
-joey:joey:5884397e1756fc834d8ee8f4
->>>>>>> 459b8d4eb8056b874fe3b0875a2a343e1c0e0d26
-
-bobby:password:58845a541756fc834d8ef336
+andbass:123:5884644e1756fc834d8faab8
