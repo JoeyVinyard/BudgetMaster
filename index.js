@@ -5,8 +5,20 @@ var io = require('socket.io')(http);
 var fs = require('fs');
 
 var request = require("request");
+
+//-----------------------
+//---Capital One API-----
+//-----------------------
 var baseUrl = "http://api.reimaginebanking.com/";
 var keyUrl = "?key=335c078a708beb9fffbe11ee6a51364e";
+
+//-----------------------
+//---Google Places API---
+//-----------------------
+let BASE_GOOGLE_URL = "https://maps.googleapis.com/maps/api/";
+let GOOGLE_API_KEY = "AIzaSyARogmz0eZ6aOPftL8k0tpQUmIymww0lNU";
+let DEFAULT_PRICE_LEVEL = 1.9;
+var map; //google map element
 
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
@@ -209,17 +221,7 @@ function generateRandomNumber(length){
 	return num;
 }
 
-// <- Pizza Hut
-// <- Walmart
-// <- Dick's Sporting Goods
-// <- Mcdonald's
-// <- Arby's
-// <- Starbucks
-// <- Cosi
-// <- Target
-// <- Meijer
-// <- Texas Roadhouse
-
+// Pizza Hut, Walmart, Dick's Sporting Goods, Mcdonald's, Arby's, Starbucks, Cosi, Target, Meijer, Texas Roadhouse
 
 var stores = ["5827c658360f81f10454a40d", "57cf75cfa73e494d8675f92c", "57cf75cea73e494d8675eed2", "57cf75cea73e494d8675f3e7",
 	      "57cf75cfa73e494d8675fa21", "57e69f8edbd83557146123ee", "57cf75cea73e494d8675f04c", "57cf75cea73e494d8675ed21",
@@ -277,12 +279,3 @@ function makePurchase(accountID, merchantID, medium, purchaseDate, amount, descr
 		console.log(body.objectCreated);
 	});
 }
-//-----------------------
-//---Google Places API---
-//-----------------------
-let BASE_GOOGLE_URL = "https://maps.googleapis.com/maps/api/";
-let GOOGLE_API_KEY = "AIzaSyARogmz0eZ6aOPftL8k0tpQUmIymww0lNU";
-let DEFAULT_PRICE_LEVEL = 1.9;
-
-var map; //google map element
-
