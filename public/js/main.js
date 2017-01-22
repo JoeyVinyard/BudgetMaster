@@ -297,7 +297,7 @@ function plotLineGraph(data, container){
     	type: "scatter"
     }];
     var layout = {
-	title: "THIS GRAPH SHOWS YOU'RE SPENDING TOO MUCH MONEY",
+	title: "Account Spending",
 	xaxis: {
 	    title: 'x Axis',
 	    titlefont: {
@@ -316,7 +316,7 @@ function plotLineGraph(data, container){
 	}
     };
 
-    Plotly.newPlot(container, purchasesTrace);
+    Plotly.newPlot(container, purchasesTrace, layout);
 }
 
 function setCurrentWeekExpenditures(amountSpent, averageAmountSpent){
