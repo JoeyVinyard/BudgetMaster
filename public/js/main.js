@@ -309,23 +309,23 @@ function plotLineGraph(data, container){
     	type: "scatter"
     }];
     var layout = {
-	title: "Account Spending",
-	xaxis: {
-	    title: 'x Axis',
-	    titlefont: {
-		family:'Courier New, monospace',
-		size: 18,
-		color: '#7f7f7f',
-	    }
-	},
-	yaxis: {
-	    title: 'y Axis',
-	    titlefont: {
-		family: 'Courier New, monospace',
-		size: 18,
-		color: '#7f7f7f'
-	    }
-	}
+		title: "Account Spending",
+		xaxis: {
+		    title: 'x Axis',
+		    titlefont: {
+			family:'Courier New, monospace',
+			size: 18,
+			color: '#7f7f7f',
+		    }
+		},
+		yaxis: {
+		    title: 'y Axis',
+		    titlefont: {
+			family: 'Courier New, monospace',
+			size: 18,
+			color: '#7f7f7f'
+		    }
+		}
     };
 
     Plotly.newPlot(container, purchasesTrace, layout);
