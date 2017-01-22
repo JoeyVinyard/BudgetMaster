@@ -55,6 +55,7 @@ function sortDates(data){
     else
       return -1;
   });
+  $(".purchase-list").empty();
   weeks.forEach(function(week){
     week.forEach(function(p){
       var date = new Date(p.purchase_date);
@@ -76,7 +77,7 @@ function sortDates(data){
       }
       out+=date.getDate()+suff+" "+date.getFullYear();
       console.log(out);
-      //createListing()
+      createPurchase(p.merchant_name,out,"$"+(Math.floor(p.amount_spent*100)/100));
     });
   });
 }
@@ -110,7 +111,7 @@ function createPurchase(name, date, amountDollars) {
 
     $("<p>").text(amountDollars).appendTo(amount);
 
-    return purchase;
+    $(".purchase-list").append(purchase);
 }
 
 //this is night mode for google maps
