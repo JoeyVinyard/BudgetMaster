@@ -277,17 +277,6 @@ function makePurchase(accountID, merchantID, medium, purchaseDate, amount, descr
 		console.log(body.objectCreated);
 	});
 }
-
-function getPurchases(accountID){
-	request(baseUrl + "accounts/" + accountID + "/purchases" + keyUrl, function(error, response, body){
-		var data = JSON.parse(body);
-		for(p in data){
-			console.log(getMerchantInfo(data[p].merchant_id, data[p].purchase_date, data[p].amount, data[p].description));
-		}
-	});
-}
-
-
 //-----------------------
 //---Google Places API---
 //-----------------------
