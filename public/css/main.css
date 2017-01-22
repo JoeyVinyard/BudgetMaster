@@ -39,6 +39,10 @@ body {
     flex-grow: 1.15;
 }
 
+.heatmap {
+    height: 350px;
+}
+
 .spendings-and-recent {
     display: flex;
     flex-flow: row nowrap;
