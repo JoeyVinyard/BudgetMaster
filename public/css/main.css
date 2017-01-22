@@ -136,3 +136,19 @@ body {
     margin-top: 1em;
 }
 
+.map h1 {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-bottom: 2px solid var(--bg-dark);
+
+    margin-bottom: 0.5em;
+}
+
+.map h2 {
+    font-size: 1.5em;
+}
+
+.map h2 span {
+    font-size: 1em;
+}
+

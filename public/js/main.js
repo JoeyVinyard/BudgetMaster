@@ -30,19 +30,32 @@ function createMap(center){
 	centerPoint = center;
 }
 
-function addMarker(location, name, priceLevel){
+function addMarker(location, name, priceLevel, icon, isCenter){
 	var marker = new google.maps.Marker({
 		position: location,
 		map,
-		title: name
+		title: name,
 	});
+
+    if (icon !== undefined) {
+        marker.icon = icon;
+    }
+
 	bounds.extend(marker.position); //auto zooms to include markers
-	marker.addListener("click", function(){
-		new google.maps.InfoWindow({
-			content: "<p>" + name + "</p><p>Price: " + Array(Math.ceil(priceLevel)+1).join("$") + "</p>"
-		}).open(map, marker);
-	});
-	var distance = Math.floor(100 * 0.000621371 * google.maps.geometry.spherical.computeDistanceBetween (centerPoint, location)) / 100; //in 1.00 miles
+
+    if (!isCenter) {
+        marker.addListener("click", function(){
+            new google.maps.InfoWindow({
+                content: "<h1>" + name + "</h1><h2>Price: <span>" + Array(Math.ceil(priceLevel)+1).join("$") + "</span></h2>"
+            }).open(map, marker);
+        });
+    }
+
+    var centerLatLng = new google.maps.LatLng(centerPoint.lat, centerPoint.lng);
+    var locLatLng = new google.maps.LatLng(location.lat, location.lng);
+	var distance = Math.floor(100 * 0.000621371 * google.maps.geometry.spherical.computeDistanceBetween (centerLatLng, locLatLng)) / 100; //in 1.00 miles
+
+    google.maps.event.trigger(map, 'resize');
 }
 
 var purchases = [];
@@ -50,18 +63,21 @@ var days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunda
 var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
 function sortDates(data){
-  var index = Math.floor((new Date() - new Date(data.purchase_date))/604800000)
-  weeks[index].push(data);
-  weeks[index].sort(function(a,b){
-    if(new Date(a.purchase_date)<new Date(b.purchase_date))
-      return 1;
-    else
-      return -1;
+  console.log("sorting");
+  data.forEach(function(d){
+    var index = Math.floor((new Date() - new Date(d.purchase_date))/604800000)
+    weeks[index].push(d);
+    weeks[index].sort(function(a,b){
+      if(new Date(a.purchase_date)<new Date(b.purchase_date))
+        return 1;
+      else
+        return -1;
+    });
   });
   console.log("updating");
   $(".purchase-list").empty();
-  weeks.forEach(function(week){
-    week.forEach(function(p){
+  weeks.forEach(function(week, i){
+    week.forEach(function(p, j){
       var date = new Date(p.purchase_date);
       var out = "";
       out+=days[date.getDay()]+", "+months[date.getMonth()]+" ";
@@ -80,7 +96,7 @@ function sortDates(data){
         suff = "th";
       }
       out+=date.getDate()+suff+" "+date.getFullYear();
-      createPurchase(p.merchant_name,out,"$"+(Math.floor(p.amount_spent*100)/100));
+      createPurchase(i, j, p.merchant_name,out,"$"+(Math.floor(p.amount_spent*100)/100));
     });
   });
 }
@@ -98,19 +114,42 @@ $(document).ready(function() {
     });
 
     socket.on("endData", function() {
-
+        sortDates(allData);
         plotHeatMap(weeks);
+
+        $(".purchase").click(function() {
+            var i = +$(this).data("i");
+            var j = +$(this).data("j");
+
+            var purchase = weeks[i][j];
+            createMap(purchase);
+            addMarker({ lat: purchase.lat, lng: purchase.lng }, purchase.name, purchase.price, "http://icons.iconarchive.com/icons/icons-land/vista-map-markers/256/Map-Marker-Marker-Outside-Azure-icon.png", true);
+
+            socket.emit("getPlacesData", {
+                name: purchase.merchant_name,
+
+                latitude: purchase.lat,
+                longitude: purchase.lng,
+
+                radius: 5000,
+                type: purchase.category,
+            });
+        });
     });
 
+    socket.on("addMarker", function(data) {
+        addMarker(data.location, data.name, data.price, undefined);
+    });
+});
 //     socket.on("add-marker", function(marker) {
 //         addMarker(marker.location, marker.name, marker.price);
 //     });
 
-});
+function createPurchase(i, j, name, date, amountDollars) {
+    var purchase = $("<div>").addClass("purchase")
+        .data("i", i)
+        .data("j", j);
 
-var purchaseList = $("<div>").addClass("purchase-list");
-function createPurchase(name, date, amountDollars) {
-    var purchase = $("<div>").addClass("purchase");
     var metadata = $("<div>").addClass("meta-data").appendTo(purchase);
     var amount = $("<div>").addClass("amount").appendTo(purchase);
 
@@ -240,21 +279,6 @@ function plotLineGraph(data, container){
     Plotly.newPlot(container, purchasesTrace);
 }
 
- //    var sum = 0;
- //    var max = 0;
- //    var min = 10000000;
- //    var lastWeeklySum = 0;
- //    var weeklySum = 0;
- //    for(var i = 0; i < data.length; i ++){
-	// var transaction_day = purchase_date.substring(lastIndexOf("-"));
-	// if(present_day - transaction_day < 7){
-	//     weeklySum += data.amount_spent;
-	// }else if(present_day - transaction_day < 14){
-	//     lastWeeklySum  += data.amount_spent;
-	// }
-	// sum += data.amount_spent;
- //    }
-    
  //    var data = [{
 	// type: 'bar',
 	// x: [weeklySum, lastWeeklySum, total_weekly_average],
@@ -262,10 +286,21 @@ function plotLineGraph(data, container){
 	// orientation: 'h'
  //    }];
 function plotHeatMap(weeks) {
+    $(".heatmap").empty();
+
     var dates = weeks.reduce(function(a, b) {
         return a.concat(b);
     });
 
     var gridSize = 16;
-}
 
+    console.log(dates);
+
+    var endDate = new Date(dates[0].purchase_date);
+    var begDate = new Date(endDate);
+    begDate.setYear(endDate.getFullYear() - 1);
+
+    console.log(begDate);
+
+
+}
