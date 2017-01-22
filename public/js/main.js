@@ -84,7 +84,7 @@ function sortDates(data){
       }
       out+=date.getDate()+suff+" "+date.getFullYear();
       createPurchase(p.merchant_name,out,"$"+(Math.floor(p.amount_spent*100)/100));
-n    });
+    });
   });
 }
 var allData = [];
@@ -103,7 +103,18 @@ $(document).ready(function() {
     socket.on("endData", function() {
       console.log("blah");
         sortDates(allData);
-
+        var avgAmountSpent = calcAvgAmountSpent(weeks);
+        setAvgAmountSpent(avgAmountSpent);
+        console.log(weeks);
+        console.log(weeks[weeks.length - 2]);
+        var amountSpentLastWeek = weeks[weeks.length - 2].map(function(purchase){
+        	return purchase.amount_spent;
+        }).reduce(function(a, b) { return a + b; }, 0);
+        setLastWeekExpenditures(amountSpentLastWeek, avgAmountSpent);
+        var amountSpentThisWeek = weeks[weeks.length - 1].map(function(purchase){
+        	return purchase.amount_spent;
+        }).reduce(function(a, b) { return a + b; }, 0);
+        setCurrentWeekExpenditures(amountSpentThisWeek, avgAmountSpent);
     });
 
 //     socket.on("add-marker", function(marker) {
@@ -123,7 +134,7 @@ $(document).ready(function() {
 					purchase_date: "2017-01-12",
 				},
 				];
-	//plotLineGraph(forAndrew, $(".heatmap-container").get(0));
+	plotLineGraph(forAndrew, $(".heatmap-container").get(0));
 });
 
 var purchaseList = $("<div>").addClass("purchase-list");
@@ -235,18 +246,16 @@ function plotLineGraph(data, container){
     });
 
     var purchasesTrace = [{
- //   	x: dates,
+    	x: dates,
     	y: amountsSpent,
-	hoverformat: "$",
-	showticklabels: false,
-    	type: "line"
+    	type: "scatter"
     }];
 
     Plotly.newPlot(container, purchasesTrace);
 }
 
 function setCurrentWeekExpenditures(amountSpent, averageAmountSpent){
-	$(".card .this-week").p.text(amountSpent);
+	$(".this-week p").text("$" + amountSpent);
 	if(amountSpent < .9 * averageAmountSpent){
 		//color is green
 	}else if(amountSpent < 1.1 * averageAmountSpent){
@@ -261,13 +270,16 @@ function calcAvgAmountSpent(weeks){
 	var amountsPaid = weeks.map(function(week){
 		return week.map(function(purchase){
 			return purchase.amount_spent;
-		})
-	})
-	return 1/52 * (amountsPaid.reduce(function(amountsPaid, b) { return a + b; }, 0));
+		}).reduce(function(a, b){
+			return a + b;
+		}, 0);
+	}).reduce(function(a, b) { return a + b; }, 0);
+	console.log(amountsPaid);
+	return Math.floor(100 * 1/52 * amountsPaid) /100;
 }
 
 function setLastWeekExpenditures(amountSpent, averageAmountSpent){
-	$(".card .last-week").p.text(amountSpent);
+	$(".last-week p").text("$" + amountSpent);
 	if(amountSpent < .9 * averageAmountSpent){
 		//color is green
 	}else if(amountSpent < 1.1 * averageAmountSpent){
@@ -278,12 +290,6 @@ function setLastWeekExpenditures(amountSpent, averageAmountSpent){
 }
 
 function setAvgAmountSpent(averageAmountSpent){
-	$(".card .week-average").p.text(amountSpent);
-	if(amountSpent < .9 * averageAmountSpent){
-		//color is green
-	}else if(amountSpent < 1.1 * averageAmountSpent){
-		//color is yellow
-	}else{
-		//color is red
-	}
+	$(".week-average p").text("$" + averageAmountSpent);
+	//color is yellow
 }
