@@ -2,6 +2,8 @@
 //Google Maps Junk
 //----------------
 
+var d3 = Plotly.d3;
+
 var map;
 var bounds;
 var weeks = [];
@@ -44,15 +46,47 @@ function addMarker(location, name, priceLevel){
 }
 
 var purchases = [];
+var days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+var count = 0;
+
 function sortDates(data){
+  count++;
   var index = Math.floor((new Date() - new Date(data.purchase_date))/604800000)
   weeks[index].push(data);
   weeks[index].sort(function(a,b){
     if(new Date(a.purchase_date)<new Date(b.purchase_date))
-      return -1;
-    else
       return 1;
-  })
+    else
+      return -1;
+  });
+  if(!count%100)
+    return;
+  console.log("updating");
+  $(".purchase-list").empty();
+  weeks.forEach(function(week){
+    week.forEach(function(p){
+      var date = new Date(p.purchase_date);
+      var out = "";
+      out+=days[date.getDay()]+", "+months[date.getMonth()]+" ";
+      var dayNum = date.getDate().toString();
+      dayNum = dayNum.substring(dayNum.length-1);
+      var suff;
+      if(date.getDate()>10&&date.getDate()<15){
+        suff = "th";
+      }else if(dayNum == "1"){
+        suff = "st";
+      }else if(dayNum == "2"){
+        suff = "nd";
+      }else if(dayNum == "3"){
+        suff = "rd";
+      }else{
+        suff = "th";
+      }
+      out+=date.getDate()+suff+" "+date.getFullYear();
+      createPurchase(p.merchant_name,out,"$"+(Math.floor(p.amount_spent*100)/100));
+    });
+  });
 }
 
 $(document).ready(function() {
@@ -60,20 +94,39 @@ $(document).ready(function() {
 
     socket.emit("loadData", { custId: localStorage.customerId });
     socket.on("receiveData", function(data) {
-
         console.log(data);
-        sortDates(data)
+        sortDates(data);
     });
     
     socket.on("create-map", function(loc) {
         createMap(loc);
     });
 
+    socket.on("endData", function() {
+
+    });
+
 //     socket.on("add-marker", function(marker) {
 //         addMarker(marker.location, marker.name, marker.price);
 //     });
+
+	var forAndrew = [{
+					amount_spent: "1.02",
+					purchase_date: "2016-12-12",
+				},
+				{
+					amount_spent: "102",
+					purchase_date: "2016-12-16",
+				},
+				{
+					amount_spent: "13.85",
+					purchase_date: "2017-01-12",
+				},
+				];
+	plotLineGraph(forAndrew, $(".heatmap-container").get(0));
 });
 
+var purchaseList = $("<div>").addClass("purchase-list");
 function createPurchase(name, date, amountDollars) {
     var purchase = $("<div>").addClass("purchase");
     var metadata = $("<div>").addClass("meta-data").appendTo(purchase);
@@ -84,7 +137,7 @@ function createPurchase(name, date, amountDollars) {
 
     $("<p>").text(amountDollars).appendTo(amount);
 
-    return purchase;
+    $(".purchase-list").append(purchase);
 }
 
 //this is night mode for google maps
@@ -173,61 +226,61 @@ var styles = [
 //----------------
 //  Plotly Junk
 //----------------
-
-var HEATMAP = $(".heatmap");
-var THISWEEK = $("#thisweek");
-var LASTWEEK = $("#lastweek");
-var AVGWEEK = $("#avgweek");
-var x;
-var plotData = new Array(4);
-for(x = 0; x < plotData.length; x++){
-    plotData[x] = new Array(12);
+function getWeekNumber(d) {
+    // Copy date so don't modify original
+    d = new Date(+d);
+    d.setHours(0,0,0,0);
+    // Set to nearest Thursday: current date + 4 - current day number
+    // Make Sunday's day number 7
+    d.setDate(d.getDate() + 4 - (d.getDay()||7));
+    // Get first day of year
+    var yearStart = new Date(d.getFullYear(),0,1);
+    // Calculate full weeks to nearest Thursday
+    var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
+    // Return array of year and week number
+    return weekNo;
 }
-var date = new Date();
 
-function plotLineGraph(data){
-    
-    
-}
-function plotBarGraph(data){
-    var spending = data.map(function(o){
-	return o.amount_spent;
+function plotLineGraph(data, container){
+    var amountsSpent = data.map(function(datum){
+		return parseInt(datum.amount_spent);
     });
-    var present_day = date.getDay();
-    var sum = 0;
-    var max = 0;
-    var min = 10000000;
-    var lastWeeklySum = 0;
-    var weeklySum = 0;
-    for(var i = 0; i < data.length; i ++){
-	var transaction_day = purchase_date.substring(lastIndexOf("-"));
-	if(present_day - transaction_day < 7){
-	    weeklySum += data.amount_spent;
-	}else if(present_day - transaction_day < 14){
-	    lastWeeklySum  += data.amount_spent;
-	}
-	sum += data.amount_spent;
-    }
-    var total_weekly_average = sum/12;
-    
-    var data = [{
-	type: 'bar',
-	x: [weeklySum, lastWeeklySum, total_weekly_average],
-	y: ['This Weeks Average', 'Last Week Average', 'Average of The Weekly Averages'],
-	orientation: 'h'
+    var dates = data.map(function(datum){
+    	return new Date(datum.purchase_date);
+    });
+
+    var purchasesTrace = [{
+    	x: dates,
+    	y: amountsSpent,
+    	type: "scatter"
     }];
 
+    Plotly.newPlot(container, purchasesTrace);
 
-    Plotly.newPlot(BARGRAPH, data);
+ //    var sum = 0;
+ //    var max = 0;
+ //    var min = 10000000;
+ //    var lastWeeklySum = 0;
+ //    var weeklySum = 0;
+ //    for(var i = 0; i < data.length; i ++){
+	// var transaction_day = purchase_date.substring(lastIndexOf("-"));
+	// if(present_day - transaction_day < 7){
+	//     weeklySum += data.amount_spent;
+	// }else if(present_day - transaction_day < 14){
+	//     lastWeeklySum  += data.amount_spent;
+	// }
+	// sum += data.amount_spent;
+ //    }
     
-    var scale = [0];
-    for(var i = 0; i < 10; i ++){
-	
-    }	    
-}
+ //    var data = [{
+	// type: 'bar',
+	// x: [weeklySum, lastWeeklySum, total_weekly_average],
+	// y: ['This Weeks Average', 'Last Week Average', 'Average of The Weekly Averages'],
+	// orientation: 'h'
+ //    }];
 
-function plotHeatMap(data){
 
+<<<<<<< HEAD
     data.forEach(function(p){
         var timeStamp = p.purchase_date;
         var time = timeStamp.split('-');
