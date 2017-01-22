@@ -8,7 +8,7 @@ var map;
 var bounds;
 var weeks = [];
 
-for(var i=0;i<52;i++){
+for(var i=0;i<=52;i++){
   var week = [];
   weeks.push(week);
 }
@@ -22,10 +22,10 @@ function createMap(center){
 		}
 	}
 	map = new google.maps.Map($(".map").get(0), {
-		center,
+ 		center,
 		zoom: 12,
 		styles
-	});
+ 	});
 	bounds = new google.maps.LatLngBounds();
 	centerPoint = center;
 }
@@ -63,7 +63,6 @@ var days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunda
 var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
 function sortDates(data){
-  console.log("sorting");
   data.forEach(function(d){
     var index = Math.floor((new Date() - new Date(d.purchase_date))/604800000)
     weeks[index].push(d);
@@ -115,7 +114,6 @@ $(document).ready(function() {
 
     socket.on("endData", function() {
         sortDates(allData);
-        plotHeatMap(weeks);
 
         $(".purchase").click(function() {
             var i = +$(this).data("i");
@@ -135,11 +133,40 @@ $(document).ready(function() {
                 type: purchase.category,
             });
         });
+
+        var avgAmountSpent = calcAvgAmountSpent(weeks);
+        setAvgAmountSpent(avgAmountSpent);
+        console.log(weeks);
+        console.log(weeks[weeks.length - 2]);
+        var amountSpentLastWeek = weeks[weeks.length - 2].map(function(purchase){
+        	return purchase.amount_spent;
+        }).reduce(function(a, b) { return a + b; }, 0);
+        setLastWeekExpenditures(amountSpentLastWeek, avgAmountSpent);
+        var amountSpentThisWeek = weeks[weeks.length - 1].map(function(purchase){
+        	return purchase.amount_spent;
+        }).reduce(function(a, b) { return a + b; }, 0);
+        amountSpentThisWeek = Math.floor(amountSpentThisWeek * 100) / 100;
+        setCurrentWeekExpenditures(amountSpentThisWeek, avgAmountSpent);
     });
 
     socket.on("addMarker", function(data) {
         addMarker(data.location, data.name, data.price, undefined);
     });
+
+	var forAndrew = [{
+					amount_spent: "1.02",
+					purchase_date: "2016-12-12",
+				},
+				{
+					amount_spent: "102",
+					purchase_date: "2016-12-16",
+				},
+				{
+					amount_spent: "13.85",
+					purchase_date: "2017-01-12",
+				},
+				];
+	plotLineGraph(forAndrew, $(".heatmap-container").get(0));
 });
 //     socket.on("add-marker", function(marker) {
 //         addMarker(marker.location, marker.name, marker.price);
@@ -247,60 +274,87 @@ var styles = [
 //----------------
 //  Plotly Junk
 //----------------
-function getWeekNumber(d) {
-    // Copy date so don't modify original
-    d = new Date(+d);
-    d.setHours(0,0,0,0);
-    // Set to nearest Thursday: current date + 4 - current day number
-    // Make Sunday's day number 7
-    d.setDate(d.getDate() + 4 - (d.getDay()||7));
-    // Get first day of year
-    var yearStart = new Date(d.getFullYear(),0,1);
-    // Calculate full weeks to nearest Thursday
-    var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
-    // Return array of year and week number
-    return weekNo;
-}
-
 function plotLineGraph(data, container){
+    var hover_text = [];
+    for(var i = 0; i < data.length; i ++){
+	hover_text[i] = "$" + data[i].amount_spent;
+	
+    }
     var amountsSpent = data.map(function(datum){
 		return parseInt(datum.amount_spent);
     });
     var dates = data.map(function(datum){
     	return new Date(datum.purchase_date);
     });
-
+    console.log(hover_text);
+    
     var purchasesTrace = [{
     	x: dates,
     	y: amountsSpent,
+	text: hover_text,
+	hoverinfo: "text",
+	//showticklabels: false,
     	type: "scatter"
     }];
+    var layout = {
+	title: "THIS GRAPH SHOWS YOU'RE SPENDING TOO MUCH MONEY",
+	xaxis: {
+	    title: 'x Axis',
+	    titlefont: {
+		family:'Courier New, monospace',
+		size: 18,
+		color: '#7f7f7f',
+	    }
+	},
+	yaxis: {
+	    title: 'y Axis',
+	    titlefont: {
+		family: 'Courier New, monospace',
+		size: 18,
+		color: '#7f7f7f'
+	    }
+	}
+    };
 
     Plotly.newPlot(container, purchasesTrace);
 }
 
- //    var data = [{
-	// type: 'bar',
-	// x: [weeklySum, lastWeeklySum, total_weekly_average],
-	// y: ['This Weeks Average', 'Last Week Average', 'Average of The Weekly Averages'],
-	// orientation: 'h'
- //    }];
-function plotHeatMap(weeks) {
-    $(".heatmap").empty();
+function setCurrentWeekExpenditures(amountSpent, averageAmountSpent){
+	$(".this-week p").text("$" + amountSpent);
+	if(amountSpent < .9 * averageAmountSpent){
+		//color is green
+	}else if(amountSpent < 1.1 * averageAmountSpent){
+		//color is yellow
+	}else{
+		//color is red
+	}
+}
 
-    var dates = weeks.reduce(function(a, b) {
-        return a.concat(b);
-    });
+function calcAvgAmountSpent(weeks){
+	//returns average week expenses
+	var amountsPaid = weeks.map(function(week){
+		return week.map(function(purchase){
+			return purchase.amount_spent;
+		}).reduce(function(a, b){
+			return a + b;
+		}, 0);
+	}).reduce(function(a, b) { return a + b; }, 0);
+	console.log(amountsPaid);
+	return Math.floor(100 * 1/52 * amountsPaid) /100;
+}
 
-    var gridSize = 16;
+function setLastWeekExpenditures(amountSpent, averageAmountSpent){
+	$(".last-week p").text("$" + amountSpent);
+	if(amountSpent < .9 * averageAmountSpent){
+		//color is green
+	}else if(amountSpent < 1.1 * averageAmountSpent){
+		//color is yellow
+	}else{
+		//color is red
+	}
+}
 
-    console.log(dates);
-
-    var endDate = new Date(dates[0].purchase_date);
-    var begDate = new Date(endDate);
-    begDate.setYear(endDate.getFullYear() - 1);
-
-    console.log(begDate);
-
-
+function setAvgAmountSpent(averageAmountSpent){
+	$(".week-average p").text("$" + averageAmountSpent);
+	//color is yellow
 }
