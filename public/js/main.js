@@ -2,6 +2,8 @@
 //Google Maps Junk
 //----------------
 
+var d3 = Plotly.d3;
+
 var map;
 var bounds;
 var weeks = [];
