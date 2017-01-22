@@ -280,7 +280,7 @@ function plotLineGraph(data, container){
  //    }];
 
 
-<<<<<<< HEAD
+
     data.forEach(function(p){
         var timeStamp = p.purchase_date;
         var time = timeStamp.split('-');
