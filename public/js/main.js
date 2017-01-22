@@ -123,7 +123,7 @@ $(document).ready(function() {
 					purchase_date: "2017-01-12",
 				},
 				];
-	//plotLineGraph(forAndrew, $(".heatmap-container").get(0));
+	plotLineGraph(forAndrew, $(".heatmap-container").get(0));
 });
 
 var purchaseList = $("<div>").addClass("purchase-list");
@@ -227,35 +227,90 @@ var styles = [
 //  Plotly Junk
 //----------------
 function plotLineGraph(data, container){
+    var hover_text = [];
+    for(var i = 0; i < data.length; i ++){
+	hover_text[i] = "$" + data[i].amount_spent;
+	
+    }
     var amountsSpent = data.map(function(datum){
 		return parseInt(datum.amount_spent);
     });
     var dates = data.map(function(datum){
     	return new Date(datum.purchase_date);
     });
-
+    console.log(hover_text);
+    
     var purchasesTrace = [{
     	x: dates,
     	y: amountsSpent,
-	hoverinfo: "none",
+	text: hover_text,
+	hoverinfo: "text",
 	showticklabels: false,
-    	type: "line"
+    	type: "scatter"
     }];
+    var layout = {
+	title: "THIS GRAPH SHOWS YOU'RE SPENDING TOO MUCH MONEY",
+	xaxis: {
+	    title: 'x Axis',
+	    titlefont: {
+		family:'Courier New, monospace',
+		size: 18,
+		color: '#7f7f7f',
+	    }
+	},
+	yaxis: {
+	    title: 'y Axis',
+	    titlefont: {
+		family: 'Courier New, monospace',
+		size: 18,
+		color: '#7f7f7f'
+	    }
+	}
+    };
 
-    Plotly.newPlot(container, purchasesTrace);
+    Plotly.newPlot(container, purchasesTrace, layout);
 }
 
-var forAndrew = [{
-    amount_spent: "1.02",
-    purchase_date: "2016-12-12",
-},
-		 {
-		     amount_spent: "102",
-		     purchase_date: "2016-12-16",
-		 },
-		 {
-		     amount_spent: "13.85",
-		     purchase_date: "2017-01-12",
-		 },
-		];
-plotLineGraph(forAndrew, HEATMAP);
+
+function setCurrentWeekExpenditures(amountSpent, averageAmountSpent){
+	$(".card .this-week").p.text(amountSpent);
+	if(amountSpent < .9 * averageAmountSpent){
+		//color is green
+	}else if(amountSpent < 1.1 * averageAmountSpent){
+		//color is yellow
+	}else{
+		//color is red
+	}
+}
+
+function calcAvgAmountSpent(weeks){
+	//returns average week expenses
+	var amountsPaid = weeks.map(function(week){
+		return week.map(function(purchase){
+			return purchase.amount_spent;
+		})
+	})
+	return 1/52 * (amountsPaid.reduce(function(amountsPaid, b) { return a + b; }, 0));
+}
+
+function setLastWeekExpenditures(amountSpent, averageAmountSpent){
+	$(".card .last-week").p.text(amountSpent);
+	if(amountSpent < .9 * averageAmountSpent){
+		//color is green
+	}else if(amountSpent < 1.1 * averageAmountSpent){
+		//color is yellow
+	}else{
+		//color is red
+	}
+}
+
+function setAvgAmountSpent(averageAmountSpent){
+	$(".card .week-average").p.text(amountSpent);
+	if(amountSpent < .9 * averageAmountSpent){
+		//color is green
+	}else if(amountSpent < 1.1 * averageAmountSpent){
+		//color is yellow
+	}else{
+		//color is red
+	}
+}
