@@ -100,7 +100,7 @@ io.on('connection', function(socket){
 								"account_number": generateRandomNumber(16)
 							}
 					},function(error, response, bdy){
-						makeRandomPurchases(bdy.objectCreated._id,400);
+						makeRandomPurchases(bdy.objectCreated._id, 4000);
 						if(!emitted){
 							emitted = true;
 							console.log("Emitting");
@@ -142,55 +142,56 @@ io.on('connection', function(socket){
 	socket.on('loadData',function(user){
         console.log("loading data");
         var countComp = 0;
-        var stop = false;
 		request(baseUrl + "customers/" + user.custId + "/accounts" + keyUrl, function(error, response, bdy){
 			request(baseUrl + "accounts/" + JSON.parse(bdy)[1]._id + "/purchases" + keyUrl, function(error, response, body){
 				var data = JSON.parse(body);
 				var forAndrew;
 				Object.keys(data).forEach(function(d){
-					if(!stop){
-						request(baseUrl + "enterprise/merchants/" + data[d].merchant_id + keyUrl, function(error, response, body){
-							body = JSON.parse(body); //for some reason it comes back as a string
-							forAndrew = {
-								merchant_name: body.name,
-								category: body.category[0],
-								amount_spent: data[d].amount,
-								purchase_date: data[d].purchase_date,
-								desc: data[d].description,
-								lat: body.geocode.lat,
-								lng: body.geocode.lng
-							}
-							//Send andrew info
-							countComp++;
-							if(countComp>=Object.keys(data).length-1&&!stop){
-								socket.emit("endData");
-								stop = true;
-							}
-	                        socket.emit("receiveData", forAndrew);
-						});
-					}
+					request(baseUrl + "enterprise/merchants/" + data[d].merchant_id + keyUrl, function(error, response, body){
+						body = JSON.parse(body); //for some reason it comes back as a string
+						forAndrew = {
+							merchant_name: body.name,
+							category: body.category[0],
+							amount_spent: data[d].amount,
+							purchase_date: data[d].purchase_date,
+							desc: data[d].description,
+							lat: body.geocode.lat,
+							lng: body.geocode.lng
+						}
+						//Send andrew info
+						countComp++;
+						if(countComp>=Object.keys(data).length-1){
+							socket.emit("endData");
+						}
+                        socket.emit("receiveData", forAndrew);
+					});
 				});
 				//console.log(forAndrew);
 			});
 		});
 	});
 	socket.on('getPlacesData',function(data){
-		if(type === undefined){
+        console.log("FUCK");
+
+		if(data.type === undefined){
 			type = "food";
 		}
-		if(radius === undefined){
+		if(data.radius === undefined){
 			radius = 500;
 		}
 	    var requestString = BASE_GOOGLE_URL +
-	    "place/nearbysearch/json?location=" + latitude + ", " + longitude +
-		"&radius=" + radius + "&type=" + type + "&key=" + GOOGLE_API_KEY;
+	    "place/nearbysearch/json?location=" + data.latitude + ", " + data.longitude +
+		"&radius=" + data.radius + "&type=" + data.type + "&key=" + GOOGLE_API_KEY;
     
     	request(requestString,function(error, response, body){
-    		var originalPrice;
+    		var originalPrice = DEFAULT_PRICE_LEVEL;
+
 			if (!error && response.statusCode == 200){
 				var places = JSON.parse(body).results;
+                console.log("Places = ", places);
+
 			    places.forEach(function(place){
-					if(place.name == name){
+					if(place.name == data.name){
 						originalPrice = place.price_level;
 					    return;
 					}
@@ -198,16 +199,14 @@ io.on('connection', function(socket){
 				places.forEach(function(place){
 					if(place.price_level === undefined){
 						place.price_level = DEFAULT_PRICE_LEVEL;
-						//createMap(place.geometry.location); //instead socket this to the client
-                        //socket.emit("create-map", place.geometry.location);
 					}
-					if(originalPrice >= place.price_level && place.name != name){
-						//addMarker(place.geometry.location, place.name, place.price_level); //instead socket this to the client
-                        /*socket.emit("add-marker", {
+
+					if(originalPrice >= place.price_level && place.name != data.name){
+                        socket.emit("addMarker", {
                             location: place.geometry.location,
                             name: place.name,
                             price: place.price_level,
-                        });*/
+                        });
 					}
 				});
 			}
@@ -235,7 +234,8 @@ function generateRandomNumber(length){
 
 var stores = ["5827c658360f81f10454a40d", "57cf75cfa73e494d8675f92c", "57cf75cea73e494d8675eed2", "57cf75cea73e494d8675f3e7",
 	      "57cf75cfa73e494d8675fa21", "57e69f8edbd83557146123ee", "57cf75cea73e494d8675f04c", "57cf75cea73e494d8675ed21",
-	      "57cf75cea73e494d8675ed3f", "57cf75cfa73e494d8675f866","57cf75cea73e494d8675ec49" ];
+	      "57cf75cea73e494d8675ed3f", "57cf75cfa73e494d8675f866","57cf75cea73e494d8675ec49", "57cf75cfa73e494d8675fa21",
+	      "57cf75cfa73e494d8675fa29","57cf75cfa73e494d8675fa2a" ];
 
 
 function getRandomDate(start, end) {
@@ -247,6 +247,7 @@ function makeRandomPurchases(accountID, numPurchases){
 	let end = new Date();
 	let start = new Date();
 	start.setMonth(start.getMonth() - monthOffset);
+	console.log(numPurchases);
 	for(var i = 0; i < numPurchases; i++){
 		makePurchase(accountID, stores[getRandomInt(0, 11)], undefined,
 			getRandomDate(start, end), Math.floor(getRandomDouble(5, 107.4)*100)/100, "description");

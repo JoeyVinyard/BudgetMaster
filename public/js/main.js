@@ -25,27 +25,40 @@ function createMap(center){
 		}
 	}
 	map = new google.maps.Map($(".map").get(0), {
-		center,
+ 		center,
 		zoom: 12,
 		styles
-	});
+ 	});
 	bounds = new google.maps.LatLngBounds();
 	centerPoint = center;
 }
 
-function addMarker(location, name, priceLevel){
+function addMarker(location, name, priceLevel, icon, isCenter){
 	var marker = new google.maps.Marker({
 		position: location,
 		map,
-		title: name
+		title: name,
 	});
+
+    if (icon !== undefined) {
+        marker.icon = icon;
+    }
+
 	bounds.extend(marker.position); //auto zooms to include markers
-	marker.addListener("click", function(){
-		new google.maps.InfoWindow({
-			content: "<p>" + name + "</p><p>Price: " + Array(Math.ceil(priceLevel)+1).join("$") + "</p>"
-		}).open(map, marker);
-	});
-	var distance = Math.floor(100 * 0.000621371 * google.maps.geometry.spherical.computeDistanceBetween (centerPoint, location)) / 100; //in 1.00 miles
+
+    if (!isCenter) {
+        marker.addListener("click", function(){
+            new google.maps.InfoWindow({
+                content: "<h1>" + name + "</h1><h2>Price: <span>" + Array(Math.ceil(priceLevel)+1).join("$") + "</span></h2>"
+            }).open(map, marker);
+        });
+    }
+
+    var centerLatLng = new google.maps.LatLng(centerPoint.lat, centerPoint.lng);
+    var locLatLng = new google.maps.LatLng(location.lat, location.lng);
+	var distance = Math.floor(100 * 0.000621371 * google.maps.geometry.spherical.computeDistanceBetween (centerLatLng, locLatLng)) / 100; //in 1.00 miles
+
+    google.maps.event.trigger(map, 'resize');
 }
 
 var purchases = [];
@@ -65,8 +78,8 @@ function sortDates(data){
   });
   console.log("updating");
   $(".purchase-list").empty();
-  weeks.forEach(function(week){
-    week.forEach(function(p){
+  weeks.forEach(function(week, i){
+    week.forEach(function(p, j){
       var date = new Date(p.purchase_date);
       var out = "";
       out+=days[date.getDay()]+", "+months[date.getMonth()]+" ";
@@ -85,7 +98,7 @@ function sortDates(data){
         suff = "th";
       }
       out+=date.getDate()+suff+" "+date.getFullYear();
-      createPurchase(p.merchant_name,out,"$"+(Math.floor(p.amount_spent*100)/100));
+      createPurchase(i, j, p.merchant_name,out,"$"+(Math.floor(p.amount_spent*100)/100));
     });
   });
 }
@@ -116,6 +129,7 @@ $(document).ready(function() {
       sortDates(allData);
       drawHeatMap();
     });
+
     var offset = $("#canv").parent().offset();
     $("#canv").mousemove(function(event){
       var index=(Math.floor((event.pageX-offset.left)/120)+13*(Math.floor((event.pageY-offset.top+20)/60)-1));
@@ -127,10 +141,42 @@ $(document).ready(function() {
       var d = new Date(new Date()-index*7*24*60*60*1000);
       $("#heatmapLabel").text("Week of: " + months[d.getMonth()] + " " + d.getDate() + " | " + getWeekTot(weeks[index]),10,420);
     });
+        $(".purchase").click(function() {
+            var i = +$(this).data("i");
+            var j = +$(this).data("j");
 
-//     socket.on("add-marker", function(marker) {
-//         addMarker(marker.location, marker.name, marker.price);
-//     });
+            var purchase = weeks[i][j];
+            createMap(purchase);
+            addMarker({ lat: purchase.lat, lng: purchase.lng }, purchase.name, purchase.price, "http://icons.iconarchive.com/icons/icons-land/vista-map-markers/256/Map-Marker-Marker-Outside-Azure-icon.png", true);
+
+            socket.emit("getPlacesData", {
+                name: purchase.merchant_name,
+
+                latitude: purchase.lat,
+                longitude: purchase.lng,
+
+                radius: 5000,
+                type: purchase.category,
+            });
+        });
+
+        var avgAmountSpent = calcAvgAmountSpent(weeks);
+        setAvgAmountSpent(avgAmountSpent);
+        // console.log(weeks);
+        // console.log(weeks[weeks.length - 2]);
+        var amountSpentLastWeek = weeks[weeks.length - 2].map(function(purchase){
+        	return purchase.amount_spent;
+        }).reduce(function(a, b) { return a + b; }, 0);
+        setLastWeekExpenditures(amountSpentLastWeek, avgAmountSpent);
+        var amountSpentThisWeek = weeks[weeks.length - 1].map(function(purchase){
+        	return purchase.amount_spent;
+        }).reduce(function(a, b) { return a + b; }, 0);
+        amountSpentThisWeek = Math.floor(amountSpentThisWeek * 100) / 100;
+        setCurrentWeekExpenditures(amountSpentThisWeek, avgAmountSpent);
+
+    socket.on("addMarker", function(data) {
+        addMarker(data.location, data.name, data.price, undefined);
+    });
 
 	var forAndrew = [{
 					amount_spent: "1.02",
@@ -145,7 +191,8 @@ $(document).ready(function() {
 					purchase_date: "2017-01-12",
 				},
 				];
-	//plotLineGraph(forAndrew, $(".heatmap-container").get(0));
+	plotLineGraph(forAndrew, $("#plotdiv").get(0));
+  $("#plotdiv").hide();
 });
 function getWeekTot(week){
   var tot = 0;
@@ -153,8 +200,10 @@ function getWeekTot(week){
   return Math.floor(tot*100)/100;
 }
 var purchaseList = $("<div>").addClass("purchase-list");
-function createPurchase(name, date, amountDollars) {
-    var purchase = $("<div>").addClass("purchase");
+function createPurchase(i, j, name, date, amountDollars) {
+    var purchase = $("<div>").addClass("purchase")
+        .data("i", i)
+        .data("j", j);
     var metadata = $("<div>").addClass("meta-data").appendTo(purchase);
     var amount = $("<div>").addClass("amount").appendTo(purchase);
 
@@ -281,18 +330,87 @@ var styles = [
 //  Plotly Junk
 //----------------
 function plotLineGraph(data, container){
+    var hover_text = [];
+    for(var i = 0; i < data.length; i ++){
+	hover_text[i] = "$" + data[i].amount_spent;
+	
+    }
     var amountsSpent = data.map(function(datum){
 		return parseInt(datum.amount_spent);
     });
     var dates = data.map(function(datum){
     	return new Date(datum.purchase_date);
     });
-
+    console.log(hover_text);
+    
     var purchasesTrace = [{
     	x: dates,
     	y: amountsSpent,
+    	text: hover_text,
+    	hoverinfo: "text",
+    	//showticklabels: false,
     	type: "scatter"
     }];
+    var layout = {
+	title: "Account Spending",
+	xaxis: {
+	    title: 'x Axis',
+	    titlefont: {
+		family:'Courier New, monospace',
+		size: 18,
+		color: '#7f7f7f',
+	    }
+	},
+	yaxis: {
+	    title: 'y Axis',
+	    titlefont: {
+		family: 'Courier New, monospace',
+		size: 18,
+		color: '#7f7f7f'
+	    }
+	}
+    };
 
-    Plotly.newPlot(container, purchasesTrace);
+    Plotly.newPlot(container, purchasesTrace, layout);
+}
+
+function setCurrentWeekExpenditures(amountSpent, averageAmountSpent){
+	$(".this-week p").text("$" + amountSpent);
+	if(amountSpent < .9 * averageAmountSpent){
+		$(".this-week p").css("box-shadow", "inset 0 0 10px green");//color is green
+	}else if(amountSpent < 1.1 * averageAmountSpent){
+		$(".this-week p").css("box-shadow", "inset 0 0 10px yellow");//color is yellow
+	}else{
+		$(".this-week p").css("box-shadow", "inset 0 0 10px red");//color is red
+	}
+}
+
+function calcAvgAmountSpent(weeks){
+	//returns average week expenses
+	var amountsPaid = weeks.map(function(week){
+		return week.map(function(purchase){
+			return purchase.amount_spent;
+		}).reduce(function(a, b){
+			return a + b;
+		}, 0);
+	}).reduce(function(a, b) { return a + b; }, 0);
+	console.log(amountsPaid);
+	return Math.floor(100 * 1/52 * amountsPaid) /100;
+}
+
+function setLastWeekExpenditures(amountSpent, averageAmountSpent){
+	$(".last-week p").text("$" + amountSpent);
+	console.log(amountSpent);
+	if(amountSpent < .9 * averageAmountSpent){
+		$(".last-week p").css("box-shadow", "inset 0 0 10px green");
+	}else if(amountSpent < 1.1 * averageAmountSpent){
+		$(".last-week p").css("box-shadow", "inset 0 0 10px yellow");
+	}else{
+		$(".last-week p").css("box-shadow", "inset 0 0 10px red");
+	}
+}
+
+function setAvgAmountSpent(averageAmountSpent){
+	$(".week-average p").text("$" + averageAmountSpent);
+	$(".week-average p").css("box-shadow", "inset 0 0 10px yellow");
 }
