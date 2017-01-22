@@ -287,25 +287,6 @@ function getPurchases(accountID){
 	});
 }
 
-function getMerchantInfo(merchantID, purchaseDate, amountSpent, description){
-	//get lat, lng, category
-	request(baseUrl + "enterprise/merchants/" + merchantID + keyUrl, function(error, response, body){
-			body = JSON.parse(body); //for some reason it comes back as a string
-			var forChris = {			//this is all the data needed to run through getPlacesData
-				lat: body.geocode.lat,
-				lng: body.geocode.lng,
-				category: body.category[0],
-				merchant_name: body.name
-			}
-			var forAndrew = {
-				merchant_name: body.name,
-				category: body.category[0],
-				amount_spent: amountSpent,
-				purchase_date: purchaseDate,
-				map_data: forChris
-			}
-		});
-}
 
 //-----------------------
 //---Google Places API---
@@ -316,8 +297,3 @@ let DEFAULT_PRICE_LEVEL = 1.9;
 
 var map; //google map element
 
-function getPlacesData(name, latitude, longitude, type, radius){
-	
-}
-
-// getPlacesData("Dollar Tree", 42.429088, -76.51341959999999, "store");
