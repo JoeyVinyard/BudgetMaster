@@ -133,23 +133,22 @@ io.on('connection', function(socket){
 		request(baseUrl + "customers/" + user.custId + "/accounts" + keyUrl, function(error, response, bdy){
 			request(baseUrl + "accounts/" + JSON.parse(bdy)[1]._id + "/purchases" + keyUrl, function(error, response, body){
 				var data = JSON.parse(body);
-				for(p in data){
-	//				console.log(getMerchantInfo(data[p].merchant_id, data[p].purchase_date, data[p].amount, data[p].description));
-					request(baseUrl + "enterprise/merchants/" + data[p].merchant_id + keyUrl, function(error, response, body){
+				Object.keys(data).forEach(function(d){
+					request(baseUrl + "enterprise/merchants/" + data[d].merchant_id + keyUrl, function(error, response, body){
 						body = JSON.parse(body); //for some reason it comes back as a string
 						var forAndrew = {
 							merchant_name: body.name,
 							category: body.category[0],
-							amount_spent: data[p].amount,
-							purchase_date: data[p].purchase_date,
-							desc: data[p].description,
+							amount_spent: data[d].amount,
+							purchase_date: data[d].purchase_date,
+							desc: data[d].description,
 							lat: body.geocode.lat,
 							lng: body.geocode.lng
 						}
 						//Send andrew info
                         socket.emit("receiveData", forAndrew);
 					});
-				}
+				});
 			});
 		});
 	});
@@ -237,7 +236,7 @@ function makeRandomPurchases(accountID, numPurchases){
 	start.setMonth(start.getMonth() - monthOffset);
 	for(var i = 0; i < numPurchases; i++){
 		makePurchase(accountID, stores[getRandomInt(0, 11)], undefined,
-			getRandomDate(start, end), getRandomDouble(5, 107.4), "description");
+			getRandomDate(start, end), Math.floor(getRandomDouble(5, 107.4)*100)/100, "description");
     }
 }
 
@@ -248,6 +247,7 @@ function getRandomDouble(min, max) {
     return Math.random() * (max - min) + min;
 }
 function makePurchase(accountID, merchantID, medium, purchaseDate, amount, description){
+	console.log(purchaseDate);
 	if(merchantID === undefined){
 		merchantID = "57cf75cea73e494d8675ec49"; //Dunkin Donuts in NC
 	}
@@ -274,7 +274,7 @@ function makePurchase(accountID, merchantID, medium, purchaseDate, amount, descr
 				  "description": description
 			}
 	},function(error, response, body){
-		
+		console.log(body.objectCreated);
 	});
 }
 
