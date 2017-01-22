@@ -12,7 +12,8 @@ function createMap(center){
     		lng: -86.929
 		}
 	}
-	map = new google.maps.Map(document.getElementsByClassName("map")[0], {
+    console.log($(".map"));
+	map = new google.maps.Map($(".map").get(0), {
 		center,
 		zoom: 12,
 		styles
@@ -49,7 +50,7 @@ $(document).ready(function() {
 //     socket.on("add-marker", function(marker) {
 //         addMarker(marker.location, marker.name, marker.price);
 //     });
-// });
+});
 
 //this is night mode for google maps
 
@@ -155,17 +156,10 @@ function plotLineGraph(data){
 function plotHeatMap(data){
 
     data.foreach(function(p){
-<<<<<<< HEAD
         var timeStamp = p.purchase_date;
         var time = timeStamp.split('-');
         //plotData[Math.floor(time[2]/6)][time[1] = p.amount_spent;
     }
-=======
-	var timeStamp = p.purchase_date;
-	var time = timeStamp.split('-');
-	plotData[Math.floor(time[2]/6)][time[1]] = p.amount_spent;
-    });
->>>>>>> f70d21bab5799535456b068a309ab0ca692b4684
 
     var graph = [
       {

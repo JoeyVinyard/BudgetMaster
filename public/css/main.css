@@ -76,6 +76,21 @@ body {
     border-bottom: 2px solid var(--text-dark);
 }
 
-.card .map {
-    height: 50%;
+.map-and-alternatives {
+    padding: 0;
 }
+
+.map-and-alternatives .title {
+    margin: 0.6em;
+}
+
+.map {
+    height: 44%;
+    margin: 0 1em;
+}
+
+.alternatives {
+    margin-top: 1em;
+    border-top: 2px solid grey;
+}
+
