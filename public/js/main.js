@@ -118,13 +118,13 @@ $(document).ready(function() {
     socket.on("endData", function() {
         sortDates(allData);
 
-        $(".purchase").click(function() {
+        $(".purchase-list .purchase").click(function() {
             var i = +$(this).data("i");
             var j = +$(this).data("j");
 
             var purchase = weeks[i][j];
             createMap(purchase);
-            addMarker({ lat: purchase.lat, lng: purchase.lng }, purchase.name, purchase.price, "img/marker.png", true);
+            addMarker({ lat: purchase.lat, lng: purchase.lng }, purchase.name, purchase.price, "img/marker-small.png", true);
 
             $(".alternatives").empty();
 
@@ -211,6 +211,11 @@ function createAlternative(marker, name, price, distance) {
     $("<p>").text(dolladolla).appendTo(amount);
 
     $(".alternatives").append(purchase);
+
+    purchase.click(function() {
+        map.panTo(marker.position);
+        new google.maps.event.trigger(marker, 'click');
+    });
 }
 
 //this is night mode for google maps
