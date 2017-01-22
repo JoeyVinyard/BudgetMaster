@@ -159,6 +159,8 @@ io.on('connection', function(socket){
 							lng: body.geocode.lng
 						}
 						//Send andrew info
+						if(d==Object.keys(data).length)
+							socket.emit("endData");
                         socket.emit("receiveData", forAndrew);
 					});
 				});
