@@ -242,3 +242,46 @@ function plotLineGraph(data, container){
 
     Plotly.newPlot(container, purchasesTrace);
 }
+
+function setCurrentWeekExpenditures(amountSpent, averageAmountSpent){
+	$(".card .this-week").p.text(amountSpent);
+	if(amountSpent < .9 * averageAmountSpent){
+		//color is green
+	}else if(amountSpent < 1.1 * averageAmountSpent){
+		//color is yellow
+	}else{
+		//color is red
+	}
+}
+
+function calcAvgAmountSpent(weeks){
+	//returns average week expenses
+	var amountsPaid = weeks.map(function(week){
+		return week.map(function(purchase){
+			return purchase.amount_spent;
+		})
+	})
+	return 1/52 * (amountsPaid.reduce(function(amountsPaid, b) { return a + b; }, 0));
+}
+
+function setLastWeekExpenditures(amountSpent, averageAmountSpent){
+	$(".card .last-week").p.text(amountSpent);
+	if(amountSpent < .9 * averageAmountSpent){
+		//color is green
+	}else if(amountSpent < 1.1 * averageAmountSpent){
+		//color is yellow
+	}else{
+		//color is red
+	}
+}
+
+function setAvgAmountSpent(averageAmountSpent){
+	$(".card .week-average").p.text(amountSpent);
+	if(amountSpent < .9 * averageAmountSpent){
+		//color is green
+	}else if(amountSpent < 1.1 * averageAmountSpent){
+		//color is yellow
+	}else{
+		//color is red
+	}
+}
