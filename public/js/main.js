@@ -43,6 +43,7 @@ function addMarker(location, name, priceLevel){
 	var distance = Math.floor(100 * 0.000621371 * google.maps.geometry.spherical.computeDistanceBetween (centerPoint, location)) / 100; //in 1.00 miles
 }
 
+var purchases = [];
 function sortDates(data){
   var index = Math.floor((new Date() - new Date(data.purchase_date))/604800000)
   weeks[index].push(data);
@@ -59,6 +60,7 @@ $(document).ready(function() {
 
     socket.emit("loadData", { custId: localStorage.customerId });
     socket.on("receiveData", function(data) {
+
         console.log(data);
         sortDates(data)
     });
@@ -71,6 +73,19 @@ $(document).ready(function() {
 //         addMarker(marker.location, marker.name, marker.price);
 //     });
 });
+
+function createPurchase(name, date, amountDollars) {
+    var purchase = $("<div>").addClass("purchase");
+    var metadata = $("<div>").addClass("meta-data").appendTo(purchase);
+    var amount = $("<div>").addClass("amount").appendTo(purchase);
+
+    $("<h1>").text(name).addClass("name").appendTo(metadata);
+    $("<h2>").text(date).addClass("date").appendTo(metadata);
+
+    $("<p>").text(amountDollars).appendTo(amount);
+
+    return purchase;
+}
 
 //this is night mode for google maps
 
