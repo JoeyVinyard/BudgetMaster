@@ -100,7 +100,7 @@ io.on('connection', function(socket){
 								"account_number": generateRandomNumber(16)
 							}
 					},function(error, response, bdy){
-						makeRandomPurchases(bdy.objectCreated._id,10);
+						makeRandomPurchases(bdy.objectCreated._id,400);
 						if(!emitted){
 							emitted = true;
 							console.log("Emitting");
@@ -145,10 +145,11 @@ io.on('connection', function(socket){
 		request(baseUrl + "customers/" + user.custId + "/accounts" + keyUrl, function(error, response, bdy){
 			request(baseUrl + "accounts/" + JSON.parse(bdy)[1]._id + "/purchases" + keyUrl, function(error, response, body){
 				var data = JSON.parse(body);
+				var forAndrew;
 				Object.keys(data).forEach(function(d){
 					request(baseUrl + "enterprise/merchants/" + data[d].merchant_id + keyUrl, function(error, response, body){
 						body = JSON.parse(body); //for some reason it comes back as a string
-						var forAndrew = {
+						forAndrew = {
 							merchant_name: body.name,
 							category: body.category[0],
 							amount_spent: data[d].amount,
@@ -161,6 +162,7 @@ io.on('connection', function(socket){
                         socket.emit("receiveData", forAndrew);
 					});
 				});
+				//console.log(forAndrew);
 			});
 		});
 	});
@@ -250,7 +252,6 @@ function getRandomDouble(min, max) {
     return Math.random() * (max - min) + min;
 }
 function makePurchase(accountID, merchantID, medium, purchaseDate, amount, description){
-	console.log(purchaseDate);
 	if(merchantID === undefined){
 		merchantID = "57cf75cea73e494d8675ec49"; //Dunkin Donuts in NC
 	}
@@ -277,6 +278,6 @@ function makePurchase(accountID, merchantID, medium, purchaseDate, amount, descr
 				  "description": description
 			}
 	},function(error, response, body){
-		console.log(body.objectCreated);
+		//console.log(body.objectCreated);
 	});
 }

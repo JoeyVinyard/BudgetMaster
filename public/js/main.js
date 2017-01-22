@@ -46,7 +46,9 @@ function addMarker(location, name, priceLevel){
 var purchases = [];
 var days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
 var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+var count = 0;
 function sortDates(data){
+  count++;
   var index = Math.floor((new Date() - new Date(data.purchase_date))/604800000)
   weeks[index].push(data);
   weeks[index].sort(function(a,b){
@@ -55,6 +57,9 @@ function sortDates(data){
     else
       return -1;
   });
+  if(!count%100)
+    return;
+  console.log("updating");
   $(".purchase-list").empty();
   weeks.forEach(function(week){
     week.forEach(function(p){
@@ -76,7 +81,6 @@ function sortDates(data){
         suff = "th";
       }
       out+=date.getDate()+suff+" "+date.getFullYear();
-      console.log(out);
       createPurchase(p.merchant_name,out,"$"+(Math.floor(p.amount_spent*100)/100));
     });
   });
@@ -100,7 +104,7 @@ $(document).ready(function() {
 //         addMarker(marker.location, marker.name, marker.price);
 //     });
 });
-
+var purchaseList = $("<div>").addClass("purchase-list");
 function createPurchase(name, date, amountDollars) {
     var purchase = $("<div>").addClass("purchase");
     var metadata = $("<div>").addClass("meta-data").appendTo(purchase);
