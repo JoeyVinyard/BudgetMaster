@@ -121,7 +121,7 @@ $(document).ready(function() {
 
     canvas = document.getElementById("canv");
     $("#canv").attr("width",$(".heatmap-container").width());
-    $("#canv").attr("height",$("#heatmapcont").height()-100);
+    $("#canv").attr("height",$("#heatmapcont").height());
     ctx = canvas.getContext("2d");
 
     var done = false;
@@ -140,7 +140,6 @@ $(document).ready(function() {
                 index=0;
             else if(index>52)
                 index=52;
-            ctx.fillStyle="black";
             var d = new Date(new Date()-index*7*24*60*60*1000);
             $("#heatmapLabel").text("Week of: " + months[d.getMonth()] + " " + d.getDate() + " | " + getWeekTot(weeks[index]),10,420);
         });
@@ -266,13 +265,16 @@ function drawHeatMap(){
             max=weekAm;
     });
     avg/=(count/weeks.length);
+    var cWid = $("#canv").width();
+    console.log(cWid);
+    var cHgt = $("#canv").height();
     weeks.forEach(function(w,c){
         var red = (getWeekTot(w)/max)*255;
         var green = 255-red;
         var rgb = "rgb("+Math.floor(red)+","+Math.floor(green)+",0)"
             ctx.fillStyle = rgb;
         if(c<52)
-            ctx.fillRect((c%13)*120,40+(Math.floor((c)/13))*60,105,50);
+            ctx.fillRect((c%13)*(cWid/13),10+(Math.floor((c)/13))*60,50,50);
     });
 }
 //this is night mode for google maps
