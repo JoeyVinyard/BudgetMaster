@@ -8,7 +8,7 @@ var map;
 var bounds;
 var weeks = [];
 
-for(var i=0;i<52;i++){
+for(var i=0;i<=52;i++){
   var week = [];
   weeks.push(week);
 }
@@ -22,10 +22,10 @@ function createMap(center){
 		}
 	}
 	map = new google.maps.Map($(".map").get(0), {
-		center,
+ 		center,
 		zoom: 12,
 		styles
-	});
+ 	});
 	bounds = new google.maps.LatLngBounds();
 	centerPoint = center;
 }
@@ -50,7 +50,6 @@ var days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunda
 var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
 function sortDates(data){
-  console.log("sorting");
   data.forEach(function(d){
     var index = Math.floor((new Date() - new Date(d.purchase_date))/604800000)
     weeks[index].push(d);
@@ -238,21 +237,50 @@ var styles = [
 //  Plotly Junk
 //----------------
 function plotLineGraph(data, container){
+    var hover_text = [];
+    for(var i = 0; i < data.length; i ++){
+	hover_text[i] = "$" + data[i].amount_spent;
+	
+    }
     var amountsSpent = data.map(function(datum){
 		return parseInt(datum.amount_spent);
     });
     var dates = data.map(function(datum){
     	return new Date(datum.purchase_date);
     });
-
+    console.log(hover_text);
+    
     var purchasesTrace = [{
     	x: dates,
     	y: amountsSpent,
+	text: hover_text,
+	hoverinfo: "text",
+	showticklabels: false,
     	type: "scatter"
     }];
+    var layout = {
+	title: "THIS GRAPH SHOWS YOU'RE SPENDING TOO MUCH MONEY",
+	xaxis: {
+	    title: 'x Axis',
+	    titlefont: {
+		family:'Courier New, monospace',
+		size: 18,
+		color: '#7f7f7f',
+	    }
+	},
+	yaxis: {
+	    title: 'y Axis',
+	    titlefont: {
+		family: 'Courier New, monospace',
+		size: 18,
+		color: '#7f7f7f'
+	    }
+	}
+    };
 
-    Plotly.newPlot(container, purchasesTrace);
+    Plotly.newPlot(container, purchasesTrace, layout);
 }
+
 
 function setCurrentWeekExpenditures(amountSpent, averageAmountSpent){
 	$(".this-week p").text("$" + amountSpent);

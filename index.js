@@ -240,7 +240,7 @@ function getRandomDate(start, end) {
 }
 
 function makeRandomPurchases(accountID, numPurchases){
-	let monthOffset = 3; //how many months we look back
+	let monthOffset = 12; //how many months we look back
 	let end = new Date();
 	let start = new Date();
 	start.setMonth(start.getMonth() - monthOffset);
@@ -283,6 +283,11 @@ function makePurchase(accountID, merchantID, medium, purchaseDate, amount, descr
 				  "description": description
 			}
 	},function(error, response, body){
-		//console.log(body.objectCreated);
+		if(body==undefined){
+			makePurchase(accountID,merchantID,medium,purchaseDate,amount,description);
+		}
+		else if(body.code==undefined){
+			makePurchase(accountID,merchantID,medium,purchaseDate,amount,description);
+		}
 	});
 }
