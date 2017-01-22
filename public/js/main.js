@@ -100,6 +100,19 @@ $(document).ready(function() {
 //     });
 });
 
+function createPurchase(name, date, amountDollars) {
+    var purchase = $("<div>").addClass("purchase");
+    var metadata = $("<div>").addClass("meta-data").appendTo(purchase);
+    var amount = $("<div>").addClass("amount").appendTo(purchase);
+
+    $("<h1>").text(name).addClass("name").appendTo(metadata);
+    $("<h2>").text(date).addClass("date").appendTo(metadata);
+
+    $("<p>").text(amountDollars).appendTo(amount);
+
+    return purchase;
+}
+
 //this is night mode for google maps
 
 var styles = [
@@ -187,10 +200,13 @@ var styles = [
 //  Plotly Junk
 //----------------
 
-var TESTER = document.getElementById('tester');
+var HEATMAP = $(".heatmap");
+var THISWEEK = $("#thisweek");
+var LASTWEEK = $("#lastweek");
+var AVGWEEK = $("#avgweek");
 var x;
 var plotData = new Array(4);
-for(x = 0; x < plotData.length; x ++){
+for(x = 0; x < plotData.length; x++){
     plotData[x] = new Array(12);
 }
 var date = new Date();
@@ -228,25 +244,22 @@ function plotBarGraph(data){
     }];
 
 
-    Plotly.newPlot('myDiv', data);
+    Plotly.newPlot(BARGRAPH, data);
     
     var scale = [0];
     for(var i = 0; i < 10; i ++){
 	
-    }
-			    
-			    
+    }	    
 }
 
-/*
 function plotHeatMap(data){
 
-    data.foreach(function(p){
+    data.forEach(function(p){
         var timeStamp = p.purchase_date;
         var time = timeStamp.split('-');
-        //plotData[Math.floor(time[2]/6)][time[1] = p.amount_spent;
-    }
->>>>>>> 3d643ffbae7846a439a554c08d4e68c56e658cdc
+        plotData[Math.floor(time[2]/7)][time[1]-1] = p.amount_spent;
+    });
+    console.log(plotData);
 
     var graph = [
       {
@@ -270,8 +283,21 @@ function plotHeatMap(data){
 	  ygap: 5
       }
     ];
-    Plotly.plot(TESTER,graph);
-}*/
+    Plotly.plot(HEATMAP,graph);
+}
 
-//plotHeatMap([1,.4,.6,.2,.9,0]);
+var forAndrew = [{
+					amount_spent: "1.02",
+					purchase_date: "2016-12-12",
+				},
+				{
+					amount_spent: "102",
+					purchase_date: "2016-12-16",
+				},
+				{
+					amount_spent: "13.85",
+					purchase_date: "2017-01-12",
+				},
+				];
+plotHeatMap(forAndrew);
 //console.log( Plotly.BUILD );
