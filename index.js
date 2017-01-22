@@ -153,6 +153,45 @@ io.on('connection', function(socket){
 			});
 		});
 	});
+	socket.on('getPlacesData',function(data){
+		if(type === undefined){
+			type = "food";
+		}
+		if(radius === undefined){
+			radius = 500;
+		}
+	    var requestString = BASE_GOOGLE_URL +
+	    "place/nearbysearch/json?location=" + latitude + ", " + longitude +
+		"&radius=" + radius + "&type=" + type + "&key=" + GOOGLE_API_KEY;
+    
+    	request(requestString,function(error, response, body){
+    		var originalPrice;
+			if (!error && response.statusCode == 200){
+				var places = JSON.parse(body).results;
+			    places.forEach(function(place){
+					if(place.name == name){
+						originalPrice = place.price_level;
+					    return;
+					}
+				});
+				places.forEach(function(place){
+					if(place.price_level === undefined){
+						place.price_level = DEFAULT_PRICE_LEVEL;
+						//createMap(place.geometry.location); //instead socket this to the client
+                        //socket.emit("create-map", place.geometry.location);
+					}
+					if(originalPrice >= place.price_level && place.name != name){
+						//addMarker(place.geometry.location, place.name, place.price_level); //instead socket this to the client
+                        /*socket.emit("add-marker", {
+                            location: place.geometry.location,
+                            name: place.name,
+                            price: place.price_level,
+                        });*/
+					}
+				});
+			}
+		});
+	})
 });
 
 http.listen(3000, function(){
@@ -288,44 +327,7 @@ let DEFAULT_PRICE_LEVEL = 1.9;
 var map; //google map element
 
 function getPlacesData(name, latitude, longitude, type, radius){
-	if(type === undefined){
-		type = "food";
-	}
-	if(radius === undefined){
-		radius = 500;
-	}
-    var requestString = BASE_GOOGLE_URL +
-    "place/nearbysearch/json?location=" + latitude + ", " + longitude +
-	"&radius=" + radius + "&type=" + type + "&key=" + GOOGLE_API_KEY;
-    
-    request(requestString,
-    	function(error, response, body){
-    		var originalPrice;
-			if (!error && response.statusCode == 200){
-				var places = JSON.parse(body).results;
-			    places.forEach(function(place){
-					if(place.name == name){
-						originalPrice = place.price_level;
-					    return;
-					}
-				});
-				places.forEach(function(place){
-					if(place.price_level === undefined){
-						place.price_level = DEFAULT_PRICE_LEVEL;
-						//createMap(place.geometry.location); //instead socket this to the client
-                        //socket.emit("create-map", place.geometry.location);
-					}
-					if(originalPrice >= place.price_level && place.name != name){
-						//addMarker(place.geometry.location, place.name, place.price_level); //instead socket this to the client
-                        /*socket.emit("add-marker", {
-                            location: place.geometry.location,
-                            name: place.name,
-                            price: place.price_level,
-                        });*/
-					}
-				});
-			}
-		});
+	
 }
 
 // getPlacesData("Dollar Tree", 42.429088, -76.51341959999999, "store");
