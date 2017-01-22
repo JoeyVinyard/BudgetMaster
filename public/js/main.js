@@ -243,7 +243,7 @@ function plotLineGraph(data, container){
     	y: amountsSpent,
 	text: hover_text,
 	hoverinfo: "text",
-	showticklabels: false,
+	//showticklabels: false,
     	type: "scatter"
     }];
     var layout = {
@@ -266,7 +266,7 @@ function plotLineGraph(data, container){
 	}
     };
 
-    Plotly.newPlot(container, purchasesTrace, layout);
+    Plotly.newPlot(container, purchasesTrace);
 }
 
 
