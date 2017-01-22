@@ -2,6 +2,8 @@
 //Google Maps Junk
 //----------------
 
+var d3 = Plotly.d3;
+
 var map;
 var bounds;
 var weeks = [];
@@ -46,7 +48,10 @@ function addMarker(location, name, priceLevel){
 var purchases = [];
 var days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
 var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+var count = 0;
+
 function sortDates(data){
+  count++;
   var index = Math.floor((new Date() - new Date(data.purchase_date))/604800000)
   weeks[index].push(data);
   weeks[index].sort(function(a,b){
@@ -55,6 +60,9 @@ function sortDates(data){
     else
       return -1;
   });
+  if(!count%100)
+    return;
+  console.log("updating");
   $(".purchase-list").empty();
   weeks.forEach(function(week){
     week.forEach(function(p){
@@ -76,7 +84,6 @@ function sortDates(data){
         suff = "th";
       }
       out+=date.getDate()+suff+" "+date.getFullYear();
-      console.log(out);
       createPurchase(p.merchant_name,out,"$"+(Math.floor(p.amount_spent*100)/100));
     });
   });
@@ -88,11 +95,15 @@ $(document).ready(function() {
     socket.emit("loadData", { custId: localStorage.customerId });
     socket.on("receiveData", function(data) {
         console.log(data);
-        sortDates(data)
+        sortDates(data);
     });
     
     socket.on("create-map", function(loc) {
         createMap(loc);
+    });
+
+    socket.on("endData", function() {
+
     });
 
 //     socket.on("add-marker", function(marker) {
@@ -115,6 +126,7 @@ $(document).ready(function() {
 	plotLineGraph(forAndrew, $(".heatmap-container").get(0));
 });
 
+var purchaseList = $("<div>").addClass("purchase-list");
 function createPurchase(name, date, amountDollars) {
     var purchase = $("<div>").addClass("purchase");
     var metadata = $("<div>").addClass("meta-data").appendTo(purchase);
