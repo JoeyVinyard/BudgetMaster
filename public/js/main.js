@@ -48,9 +48,8 @@ function addMarker(location, name, priceLevel){
 var purchases = [];
 var days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
 var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-var count = 0;
+
 function sortDates(data){
-  count++;
   var index = Math.floor((new Date() - new Date(data.purchase_date))/604800000)
   weeks[index].push(data);
   weeks[index].sort(function(a,b){
@@ -59,8 +58,6 @@ function sortDates(data){
     else
       return -1;
   });
-  if(!count%100)
-    return;
   console.log("updating");
   $(".purchase-list").empty();
   weeks.forEach(function(week){
@@ -87,15 +84,13 @@ function sortDates(data){
     });
   });
 }
-
+var allData = [];
 $(document).ready(function() {
     var socket = io("http://localhost:3000");
 
     socket.emit("loadData", { custId: localStorage.customerId });
     socket.on("receiveData", function(data) {
-
-        console.log(data);
-        sortDates(data)
+        allData.push(data);
     });
     
     socket.on("create-map", function(loc) {
