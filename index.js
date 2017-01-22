@@ -99,7 +99,7 @@ io.on('connection', function(socket){
 								"account_number": generateRandomNumber(16)
 							}
 					},function(error, response, bdy){
-						makeRandomPurchases(bdy.objectCreated._id, 4000);
+						makeRandomPurchases(bdy.objectCreated._id, 400);
 						if(!emitted){
 							emitted = true;
 							console.log("Emitting");
@@ -160,7 +160,6 @@ io.on('connection', function(socket){
 						//Send andrew info
 						countComp++;
 						if(countComp>=Object.keys(data).length-1){
-							console.log("Finished");
 							socket.emit("endData");
 						}
                         socket.emit("receiveData", forAndrew);
