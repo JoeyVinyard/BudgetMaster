@@ -12,7 +12,7 @@ function plotLineGraph(data, container){
     	return new Date(datum.purchase_date);
     });
     console.log(hover_text);
-    
+    console.log(amountsSpent);
     var purchasesTrace = [{
     	x: dates,
     	y: amountsSpent,
@@ -22,9 +22,9 @@ function plotLineGraph(data, container){
     	type: "scatter"
     }];
     var layout = {
-	title: "THIS GRAPH SHOWS YOU'RE SPENDING TOO MUCH MONEY",
+	title: "Account Spending",
 	xaxis: {
-	    title: 'x Axis',
+	    title: 'Time',
 	    titlefont: {
 		family:'Courier New, monospace',
 		size: 18,
@@ -32,7 +32,7 @@ function plotLineGraph(data, container){
 	    }
 	},
 	yaxis: {
-	    title: 'y Axis',
+	    title: '$$$$$',
 	    titlefont: {
 		family: 'Courier New, monospace',
 		size: 18,
@@ -56,4 +56,4 @@ var forAndrew = [{
 		     purchase_date: "2017-01-12",
 		 },
 		];
-plotLineGraph(forAndrew, "").get(0);
+plotLineGraph(forAndrew, "");

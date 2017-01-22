@@ -24,17 +24,16 @@
                 <img src="img/logo.png">
             </section>
             <section class="links">
-                <a href="/login">Login</a>
-                <a href="/register">Register</a>
+                <a href="/register">Profile</a>
                 <a href="/about">About</a>
                 <a href="/contact">Contact Us</a>
             </section>
         </nav>
         <div class="main">
             <div class="purchase-info">
-                <section class="card heatmap">
+                <section id = "heatmapcont" class="card heatmap">
                     <h1 class="title">Spending Map</h1>
-                    <div class="heatmap-container"><canvas id = "canv"></canvas></div>
+                    <div class="heatmap-container"><div id="plotdiv"></div><canvas id = "canv"></canvas><p id = "heatmapLabel">Week of:</p></div>
                 </section>
                 <div class="spendings-and-recent">
                     <div class="spendings">

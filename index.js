@@ -17,7 +17,6 @@ var keyUrl = "?key=335c078a708beb9fffbe11ee6a51364e";
 //-----------------------
 let BASE_GOOGLE_URL = "https://maps.googleapis.com/maps/api/";
 let GOOGLE_API_KEY = "AIzaSyARogmz0eZ6aOPftL8k0tpQUmIymww0lNU";
-let DEFAULT_PRICE_LEVEL = 1.9;
 var map; //google map element
 
 app.get('/', function(req, res){
@@ -100,7 +99,7 @@ io.on('connection', function(socket){
 								"account_number": generateRandomNumber(16)
 							}
 					},function(error, response, bdy){
-						makeRandomPurchases(bdy.objectCreated._id, 20);
+						makeRandomPurchases(bdy.objectCreated._id, 400);
 						if(!emitted){
 							emitted = true;
 							console.log("Emitting");
@@ -161,7 +160,6 @@ io.on('connection', function(socket){
 						//Send andrew info
 						countComp++;
 						if(countComp>=Object.keys(data).length-1){
-							console.log("Finished");
 							socket.emit("endData");
 						}
                         socket.emit("receiveData", forAndrew);
@@ -185,7 +183,7 @@ io.on('connection', function(socket){
 		"&radius=" + data.radius + "&type=" + data.type + "&key=" + GOOGLE_API_KEY;
     
     	request(requestString,function(error, response, body){
-    		var originalPrice = DEFAULT_PRICE_LEVEL;
+    		var originalPrice = Math.ceil(Math.random() * 2);
 
 			if (!error && response.statusCode == 200){
 				var places = JSON.parse(body).results;
@@ -199,7 +197,7 @@ io.on('connection', function(socket){
 				});
 				places.forEach(function(place){
 					if(place.price_level === undefined){
-						place.price_level = DEFAULT_PRICE_LEVEL;
+						place.price_level = 2;
 					}
 
 					if(originalPrice >= place.price_level && place.name != data.name){
@@ -235,7 +233,8 @@ function generateRandomNumber(length){
 
 var stores = ["5827c658360f81f10454a40d", "57cf75cfa73e494d8675f92c", "57cf75cea73e494d8675eed2", "57cf75cea73e494d8675f3e7",
 	      "57cf75cfa73e494d8675fa21", "57e69f8edbd83557146123ee", "57cf75cea73e494d8675f04c", "57cf75cea73e494d8675ed21",
-	      "57cf75cea73e494d8675ed3f", "57cf75cfa73e494d8675f866","57cf75cea73e494d8675ec49" ];
+	      "57cf75cea73e494d8675ed3f", "57cf75cfa73e494d8675f866","57cf75cea73e494d8675ec49", "57cf75cfa73e494d8675fa21",
+	      "57cf75cfa73e494d8675fa29","57cf75cfa73e494d8675fa2a" ];
 
 
 function getRandomDate(start, end) {
@@ -247,6 +246,7 @@ function makeRandomPurchases(accountID, numPurchases){
 	let end = new Date();
 	let start = new Date();
 	start.setMonth(start.getMonth() - monthOffset);
+	console.log(numPurchases);
 	for(var i = 0; i < numPurchases; i++){
 		makePurchase(accountID, stores[getRandomInt(0, 11)], undefined,
 			getRandomDate(start, end), Math.floor(getRandomDouble(5, 107.4)*100)/100, "description");
