@@ -22,10 +22,10 @@ function createMap(center){
 		}
 	}
 	map = new google.maps.Map($(".map").get(0), {
-		center,
+ 		center,
 		zoom: 12,
 		styles
-	});
+ 	});
 	bounds = new google.maps.LatLngBounds();
 	centerPoint = center;
 }
@@ -235,12 +235,27 @@ function plotLineGraph(data, container){
     });
 
     var purchasesTrace = [{
- //   	x: dates,
+    	x: dates,
     	y: amountsSpent,
-	hoverformat: "$",
+	hoverinfo: "none",
 	showticklabels: false,
     	type: "line"
     }];
 
     Plotly.newPlot(container, purchasesTrace);
 }
+
+var forAndrew = [{
+    amount_spent: "1.02",
+    purchase_date: "2016-12-12",
+},
+		 {
+		     amount_spent: "102",
+		     purchase_date: "2016-12-16",
+		 },
+		 {
+		     amount_spent: "13.85",
+		     purchase_date: "2017-01-12",
+		 },
+		];
+plotLineGraph(forAndrew, HEATMAP);
