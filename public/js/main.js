@@ -179,26 +179,36 @@ $(document).ready(function() {
         amountSpentThisWeek = Math.floor(amountSpentThisWeek * 100) / 100;
         setCurrentWeekExpenditures(amountSpentThisWeek, avgAmountSpent);
 
+        var data = [];
+        weeks.forEach(function(week){
+        	week.forEach(function(purchase){
+        		data.push({
+        			amount_spent: purchase.amount_spent,
+        			purchase_date: purchase.purchase_date
+        		});
+        	});
+        });
+        console.log(data);
+        plotLineGraph(data, $(".heatmap-container").get(0));
+    });
+
         socket.on("addMarker", function(data) {
             addMarker(data.location, data.name, data.price, undefined);
         });
-
-        var forAndrew = [{
-            amount_spent: "1.02",
-            purchase_date: "2016-12-12",
-        },
-        {
-            amount_spent: "102",
-            purchase_date: "2016-12-16",
-        },
-        {
-            amount_spent: "13.85",
-            purchase_date: "2017-01-12",
-        },
-        ];
-        plotLineGraph(forAndrew, $("#plotdiv").get(0));
-        $("#plotdiv").hide();
-    });
+	// var forAndrew = [{
+	// 				amount_spent: "1.02",
+	// 				purchase_date: "2016-12-12",
+	// 			},
+	// 			{
+	// 				amount_spent: "102",
+	// 				purchase_date: "2016-12-16",
+	// 			},
+	// 			{
+	// 				amount_spent: "13.85",
+	// 				purchase_date: "2017-01-12",
+	// 			},
+	// 			];
+	// plotLineGraph(forAndrew, $(".heatmap-container").get(0));
 });
 function getWeekTot(week){
     var tot = 0;
@@ -367,8 +377,7 @@ var styles = [
 function plotLineGraph(data, container){
     var hover_text = [];
     for(var i = 0; i < data.length; i ++){
-        hover_text[i] = "$" + data[i].amount_spent;
-
+	hover_text[i] = "$" + Math.floor(100 * data[i].amount_spent) / 100;
     }
     var amountsSpent = data.map(function(datum){
         return parseInt(datum.amount_spent);
@@ -384,26 +393,20 @@ function plotLineGraph(data, container){
         text: hover_text,
         hoverinfo: "text",
         //showticklabels: false,
-        type: "scatter"
+        type: "scatter",
+        marker:{
+        	color: "rgb(0,0,0)"
+        }
     }];
     var layout = {
-        title: "Account Spending",
-        xaxis: {
-            title: 'x Axis',
-            titlefont: {
-                family:'Courier New, monospace',
-                size: 18,
-                color: '#7f7f7f',
-            }
-        },
-        yaxis: {
-            title: 'y Axis',
-            titlefont: {
-                family: 'Courier New, monospace',
-                size: 18,
-                color: '#7f7f7f'
-            }
-        }
+		yaxis: {
+		    title: 'Dollars Spent',
+		    titlefont: {
+			family: 'Overpass, monospace',
+			size: 15,
+			color: '#7f7f7f'
+		    }
+		},
     };
 
     Plotly.newPlot(container, purchasesTrace, layout);
@@ -411,12 +414,14 @@ function plotLineGraph(data, container){
 
 function setCurrentWeekExpenditures(amountSpent, averageAmountSpent){
     $(".this-week p").text("$" + amountSpent);
+    var oldShadow = $(".this-week").css("box-shadow") + ", ";
+
     if(amountSpent < .9 * averageAmountSpent){
-        $(".this-week p").css("box-shadow", "inset 0 0 10px green");//color is green
+        $(".this-week").css("box-shadow", oldShadow + "inset 0 0 10px green");//color is green
     }else if(amountSpent < 1.1 * averageAmountSpent){
-        $(".this-week p").css("box-shadow", "inset 0 0 10px yellow");//color is yellow
+        $(".this-week").css("box-shadow", oldShadow + "inset 0 0 10px yellow");//color is yellow
     }else{
-        $(".this-week p").css("box-shadow", "inset 0 0 10px red");//color is red
+        $(".this-week").css("box-shadow", oldShadow + "inset 0 0 10px red");//color is red
     }
 }
 
@@ -435,17 +440,20 @@ function calcAvgAmountSpent(weeks){
 
 function setLastWeekExpenditures(amountSpent, averageAmountSpent){
     $(".last-week p").text("$" + amountSpent);
-    console.log(amountSpent);
+    var oldShadow = $(".last-week").css("box-shadow") + ", ";
+
     if(amountSpent < .9 * averageAmountSpent){
-        $(".last-week p").css("box-shadow", "inset 0 0 10px green");
+        $(".last-week").css("box-shadow", oldShadow + "inset 0 0 10px green");
     }else if(amountSpent < 1.1 * averageAmountSpent){
-        $(".last-week p").css("box-shadow", "inset 0 0 10px yellow");
+        $(".last-week").css("box-shadow", oldShadow + "inset 0 0 10px yellow");
     }else{
-        $(".last-week p").css("box-shadow", "inset 0 0 10px red");
+        $(".last-week").css("box-shadow", oldShadow + "inset 0 0 10px red");
     }
 }
 
 function setAvgAmountSpent(averageAmountSpent){
+    var oldShadow = $(".week-average").css("box-shadow") + ", ";
+
     $(".week-average p").text("$" + averageAmountSpent);
-    $(".week-average p").css("box-shadow", "inset 0 0 10px yellow");
+    $(".week-average").css("box-shadow", oldShadow + "inset 0 0 10px yellow");
 }
