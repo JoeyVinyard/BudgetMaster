@@ -265,7 +265,7 @@ function getRandomDouble(min, max) {
 }
 function makePurchase(accountID, merchantID, medium, purchaseDate, amount, description){
 	if(merchantID === undefined){
-		merchantID = "57cf75cea73e494d8675ec49"; //Dunkin Donuts in NC
+		merchantID = "57cf75cea73e494d8675ee71"; //Dunkin Donuts in NC
 	}
 	if(medium === undefined){
 		medium = "balance";
@@ -296,6 +296,5 @@ function makePurchase(accountID, merchantID, medium, purchaseDate, amount, descr
 		else if(body.code==undefined){
 			makePurchase(accountID,merchantID,medium,purchaseDate,amount,description);
 		}
-		console.log(body);
 	});
 }
