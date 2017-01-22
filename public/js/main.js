@@ -48,10 +48,6 @@ function addMarker(location, name, priceLevel){
 var purchases = [];
 var days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
 var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-<<<<<<< HEAD
-=======
-var count = 0;
->>>>>>> 9cdb2554431e643424e7d8217f175ec6475a09db
 
 function sortDates(data){
   var index = Math.floor((new Date() - new Date(data.purchase_date))/604800000)
@@ -108,7 +104,21 @@ $(document).ready(function() {
 //     socket.on("add-marker", function(marker) {
 //         addMarker(marker.location, marker.name, marker.price);
 //     });
-	initializePlotlyElements();
+
+	var forAndrew = [{
+					amount_spent: "1.02",
+					purchase_date: "2016-12-12",
+				},
+				{
+					amount_spent: "102",
+					purchase_date: "2016-12-16",
+				},
+				{
+					amount_spent: "13.85",
+					purchase_date: "2017-01-12",
+				},
+				];
+	plotLineGraph(forAndrew, $(".heatmap-container").get(0));
 });
 
 var purchaseList = $("<div>").addClass("purchase-list");
@@ -211,22 +221,64 @@ var styles = [
 //----------------
 //  Plotly Junk
 //----------------
-
-var HEATMAP;
-var THISWEEK;
-var LASTWEEK;
-var AVGWEEK;
-
-function initializePlotlyElements(){
-	HEATMAP = $(".heatmap-container").get(0);
-	console.log(HEATMAP);
-	// THISWEEK = $("thisweek").get(0);
-	// LASTWEEK = $("lastweek").get(0);
-	// AVGWEEK = $("avgweek").get(0);
+function getWeekNumber(d) {
+    // Copy date so don't modify original
+    d = new Date(+d);
+    d.setHours(0,0,0,0);
+    // Set to nearest Thursday: current date + 4 - current day number
+    // Make Sunday's day number 7
+    d.setDate(d.getDate() + 4 - (d.getDay()||7));
+    // Get first day of year
+    var yearStart = new Date(d.getFullYear(),0,1);
+    // Calculate full weeks to nearest Thursday
+    var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7);
+    // Return array of year and week number
+    return weekNo;
 }
 
-function plotHeatMap(data){
+function plotLineGraph(data, container){
+    var amountsSpent = data.map(function(datum){
+		return parseInt(datum.amount_spent);
+    });
+    var dates = data.map(function(datum){
+    	return new Date(datum.purchase_date);
+    });
 
+    var purchasesTrace = [{
+    	x: dates,
+    	y: amountsSpent,
+    	type: "scatter"
+    }];
+
+    Plotly.newPlot(container, purchasesTrace);
+
+ //    var sum = 0;
+ //    var max = 0;
+ //    var min = 10000000;
+ //    var lastWeeklySum = 0;
+ //    var weeklySum = 0;
+ //    for(var i = 0; i < data.length; i ++){
+	// var transaction_day = purchase_date.substring(lastIndexOf("-"));
+	// if(present_day - transaction_day < 7){
+	//     weeklySum += data.amount_spent;
+	// }else if(present_day - transaction_day < 14){
+	//     lastWeeklySum  += data.amount_spent;
+	// }
+	// sum += data.amount_spent;
+ //    }
+    
+ //    var data = [{
+	// type: 'bar',
+	// x: [weeklySum, lastWeeklySum, total_weekly_average],
+	// y: ['This Weeks Average', 'Last Week Average', 'Average of The Weekly Averages'],
+	// orientation: 'h'
+ //    }];
+
+
+    
+ //    var scale = [0];
+ //    for(var i = 0; i < 10; i ++){
+	
+ //    }	    
+    
 }
-
-//console.log( Plotly.BUILD );
