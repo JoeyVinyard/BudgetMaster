@@ -10,6 +10,7 @@ for(var i=0;i<52;i++){
   var week = [];
   weeks.push(week);
 }
+var centerPoint;
 
 function createMap(center){
 	if(center === undefined){
@@ -18,13 +19,13 @@ function createMap(center){
     		lng: -86.929
 		}
 	}
-    console.log($(".map"));
 	map = new google.maps.Map($(".map").get(0), {
 		center,
 		zoom: 12,
 		styles
 	});
 	bounds = new google.maps.LatLngBounds();
+	centerPoint = center;
 }
 
 function addMarker(location, name, priceLevel){
@@ -39,6 +40,7 @@ function addMarker(location, name, priceLevel){
 			content: "<p>" + name + "</p><p>Price: " + Array(Math.ceil(priceLevel)+1).join("$") + "</p>"
 		}).open(map, marker);
 	});
+	var distance = Math.floor(100 * 0.000621371 * google.maps.geometry.spherical.computeDistanceBetween (centerPoint, location)) / 100; //in 1.00 miles
 }
 
 function sortDates(data){
