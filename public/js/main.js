@@ -273,5 +273,5 @@ var forAndrew = [{
 					purchase_date: "2017-01-12",
 				},
 				];
-plotHeatMap(forAndrew);
+ plotHeatMap(forAndrew);
 //console.log( Plotly.BUILD );
