@@ -9,6 +9,7 @@
     --text-light: var(--bg-light);
     --text-dark: rgb(47, 36, 29);
     --text-extra-dark: rgb(19, 29, 40);
+    --text-less-dark: rgb(66, 50, 56);
 
     --btn-color: rgb(3, 95, 29);
 }

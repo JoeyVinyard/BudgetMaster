@@ -15,7 +15,7 @@ body {
 .main {
     display: flex;
 
-    flex-flow: row wrap;
+    flex-flow: row nowrap;
     align-items: stretch;
 
     flex-grow: 1;
@@ -42,7 +42,7 @@ body {
 
 .spendings-and-recent {
     display: flex;
-    flex-flow: row wrap;
+    flex-flow: row nowrap;
 }
 
 .spendings-and-recent > * {
@@ -76,6 +76,46 @@ body {
     border-bottom: 2px solid var(--text-dark);
 }
 
+.recent-purchases {
+    display: flex;
+    flex-flow: column nowrap;
+}
+
+.purchase-list {
+    overflow-y: scroll;
+
+    flex: 9 0 0;
+}
+
+.purchase {
+    display: flex;
+    flex-flow: row nowrap;
+
+    padding: 0.5em;
+    margin: 0.5em 0;
+
+    align-items: center;
+
+    background: linear-gradient(to bottom, white, var(--bg-light));
+    box-shadow: 0 2px 5px #ddd;
+    border: 1px solid lightgrey;
+}
+
+.purchase .meta-data {
+    flex-grow: 1;
+}
+
+.purchase .meta-data .date {
+    color: var(--text-less-dark);
+    font-size: 1.25em;
+}
+
+.purchase .amount {
+    padding-left: 1em;
+
+    font-size: 2em;
+}
+
 .map-and-alternatives {
     padding: 0;
 }
@@ -91,6 +131,5 @@ body {
 
 .alternatives {
     margin-top: 1em;
-    border-top: 2px solid grey;
 }
 

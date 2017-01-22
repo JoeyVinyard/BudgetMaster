@@ -37,11 +37,13 @@ function addMarker(location, name, priceLevel){
 	var distance = Math.floor(100 * 0.000621371 * google.maps.geometry.spherical.computeDistanceBetween (centerPoint, location)) / 100; //in 1.00 miles
 }
 
+var purchases = [];
 $(document).ready(function() {
     var socket = io("http://localhost:3000");
 
     socket.emit("loadData", { custId: localStorage.customerId });
     socket.on("receiveData", function(data) {
+
         console.log(data);
     });
     
