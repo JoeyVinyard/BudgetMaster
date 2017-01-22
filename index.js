@@ -141,7 +141,7 @@ io.on('connection', function(socket){
 	});
 	socket.on('loadData',function(user){
         console.log("loading data");
-
+        var countComp = 0;
 		request(baseUrl + "customers/" + user.custId + "/accounts" + keyUrl, function(error, response, bdy){
 			request(baseUrl + "accounts/" + JSON.parse(bdy)[1]._id + "/purchases" + keyUrl, function(error, response, body){
 				var data = JSON.parse(body);
@@ -159,8 +159,11 @@ io.on('connection', function(socket){
 							lng: body.geocode.lng
 						}
 						//Send andrew info
-						if(d==Object.keys(data).length)
+						countComp++;
+						if(countComp>=Object.keys(data).length-1){
+							console.log("Finished");
 							socket.emit("endData");
+						}
                         socket.emit("receiveData", forAndrew);
 					});
 				});

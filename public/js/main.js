@@ -50,13 +50,16 @@ var days = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunda
 var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
 function sortDates(data){
-  var index = Math.floor((new Date() - new Date(data.purchase_date))/604800000)
-  weeks[index].push(data);
-  weeks[index].sort(function(a,b){
-    if(new Date(a.purchase_date)<new Date(b.purchase_date))
-      return 1;
-    else
-      return -1;
+  console.log("sorting");
+  data.forEach(function(d){
+    var index = Math.floor((new Date() - new Date(d.purchase_date))/604800000)
+    weeks[index].push(d);
+    weeks[index].sort(function(a,b){
+      if(new Date(a.purchase_date)<new Date(b.purchase_date))
+        return 1;
+      else
+        return -1;
+    });
   });
   console.log("updating");
   $(".purchase-list").empty();
@@ -98,6 +101,8 @@ $(document).ready(function() {
     });
 
     socket.on("endData", function() {
+      console.log("blah");
+        sortDates(allData);
 
     });
 
@@ -118,7 +123,7 @@ $(document).ready(function() {
 					purchase_date: "2017-01-12",
 				},
 				];
-	plotLineGraph(forAndrew, $(".heatmap-container").get(0));
+	//plotLineGraph(forAndrew, $(".heatmap-container").get(0));
 });
 
 var purchaseList = $("<div>").addClass("purchase-list");
@@ -236,21 +241,21 @@ function getWeekNumber(d) {
     return weekNo;
 }
 
-function plotLineGraph(data, container){
-    var amountsSpent = data.map(function(datum){
-		return parseInt(datum.amount_spent);
-    });
-    var dates = data.map(function(datum){
-    	return new Date(datum.purchase_date);
-    });
+// function plotLineGraph(data, container){
+//     var amountsSpent = data.map(function(datum){
+// 		return parseInt(datum.amount_spent);
+//     });
+//     var dates = data.map(function(datum){
+//     	return new Date(datum.purchase_date);
+//     });
 
-    var purchasesTrace = [{
-    	x: dates,
-    	y: amountsSpent,
-    	type: "scatter"
-    }];
+//     var purchasesTrace = [{
+//     	x: dates,
+//     	y: amountsSpent,
+//     	type: "scatter"
+//     }];
 
-    Plotly.newPlot(container, purchasesTrace);
+//     Plotly.newPlot(container, purchasesTrace);
 
  //    var sum = 0;
  //    var max = 0;
@@ -275,51 +280,50 @@ function plotLineGraph(data, container){
  //    }];
 
 
-<<<<<<< HEAD
-    data.forEach(function(p){
-        var timeStamp = p.purchase_date;
-        var time = timeStamp.split('-');
-        plotData[Math.floor(time[2]/7)][time[1]-1] = p.amount_spent;
-    });
-    console.log(plotData);
+//     data.forEach(function(p){
+//         var timeStamp = p.purchase_date;
+//         var time = timeStamp.split('-');
+//         plotData[Math.floor(time[2]/7)][time[1]-1] = p.amount_spent;
+//     });
+//     console.log(plotData);
 
-    var graph = [
-      {
-	  z: plotData,
-	  x: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-	  y: ['Week One', 'Week Two', 'Week Three', 'Week Four'],
-	  colorscale: [
-	      ['0.0', 'rgb(240,240,240)'],
-	      ['0.111111111111', 'rgb(150,255,150)'],
-	      ['0.222222222222', 'rgb(0,255,0)'],
-	      ['0.333333333333', 'rgb(140,255,0)'],
-	      ['0.444444444444', 'rgb(200,255,0)'],
-	      ['0.555555555556', 'rgb(255,255,0)'],
-	      ['0.666666666667', 'rgb(255,200,0)'],
-	      ['0.777777777778', 'rgb(255,150,0)'],
-	      ['0.888888888889', 'rgb(255,75,0)'],
-	      ['1.0', 'rgb(255,0,0)']
-	        ],
-	  type: 'heatmap',
-	  xgap: 5,
-	  ygap: 5
-      }
-    ];
-    Plotly.plot(HEATMAP,graph);
-}
+//     var graph = [
+//       {
+// 	  z: plotData,
+// 	  x: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+// 	  y: ['Week One', 'Week Two', 'Week Three', 'Week Four'],
+// 	  colorscale: [
+// 	      ['0.0', 'rgb(240,240,240)'],
+// 	      ['0.111111111111', 'rgb(150,255,150)'],
+// 	      ['0.222222222222', 'rgb(0,255,0)'],
+// 	      ['0.333333333333', 'rgb(140,255,0)'],
+// 	      ['0.444444444444', 'rgb(200,255,0)'],
+// 	      ['0.555555555556', 'rgb(255,255,0)'],
+// 	      ['0.666666666667', 'rgb(255,200,0)'],
+// 	      ['0.777777777778', 'rgb(255,150,0)'],
+// 	      ['0.888888888889', 'rgb(255,75,0)'],
+// 	      ['1.0', 'rgb(255,0,0)']
+// 	        ],
+// 	  type: 'heatmap',
+// 	  xgap: 5,
+// 	  ygap: 5
+//       }
+//     ];
+//     Plotly.plot(HEATMAP,graph);
+// }
 
-var forAndrew = [{
-					amount_spent: "1.02",
-					purchase_date: "2016-12-12",
-				},
-				{
-					amount_spent: "102",
-					purchase_date: "2016-12-16",
-				},
-				{
-					amount_spent: "13.85",
-					purchase_date: "2017-01-12",
-				},
-				];
- plotHeatMap(forAndrew);
+// var forAndrew = [{
+// 					amount_spent: "1.02",
+// 					purchase_date: "2016-12-12",
+// 				},
+// 				{
+// 					amount_spent: "102",
+// 					purchase_date: "2016-12-16",
+// 				},
+// 				{
+// 					amount_spent: "13.85",
+// 					purchase_date: "2017-01-12",
+// 				},
+// 				];
+//  plotHeatMap(forAndrew);
 //console.log( Plotly.BUILD );
