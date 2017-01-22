@@ -268,13 +268,14 @@ function drawHeatMap(){
     var cWid = $("#canv").width();
     console.log(cWid);
     var cHgt = $("#canv").height();
+    var margin = (cWid-(70*13))/2
     weeks.forEach(function(w,c){
         var red = (getWeekTot(w)/max)*255;
         var green = 255-red;
         var rgb = "rgb("+Math.floor(red)+","+Math.floor(green)+",0)"
             ctx.fillStyle = rgb;
         if(c<52)
-            ctx.fillRect((c%13)*(cWid/13),10+(Math.floor((c)/13))*60,50,50);
+            ctx.fillRect(margin+(c%13)*70,(Math.floor((c)/13))*70,60,60);
     });
 }
 //this is night mode for google maps
