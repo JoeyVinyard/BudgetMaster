@@ -82,6 +82,8 @@ body {
 .recent-purchases {
     display: flex;
     flex-flow: column nowrap;
+
+    padding-bottom: 0;
 }
 
 .purchase-list {
@@ -120,6 +122,9 @@ body {
 }
 
 .map-and-alternatives {
+    display: flex;
+    flex-flow: column nowrap;
+
     padding: 0;
 }
 
@@ -152,3 +157,12 @@ body {
     font-size: 1em;
 }
 
+.alternatives {
+    overflow-y: scroll;
+    flex: 9 0 0;
+}
+
+.alternatives .purchase {
+    margin: 0 1em;
+    margin-bottom: 0.5em;
+}

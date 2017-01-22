@@ -38,7 +38,7 @@ function addMarker(location, name, priceLevel, icon, isCenter){
 	});
 
     if (icon !== undefined) {
-        marker.icon = icon;
+        marker.setIcon(icon);
     }
 
 	bounds.extend(marker.position); //auto zooms to include markers
@@ -54,6 +54,9 @@ function addMarker(location, name, priceLevel, icon, isCenter){
     var centerLatLng = new google.maps.LatLng(centerPoint.lat, centerPoint.lng);
     var locLatLng = new google.maps.LatLng(location.lat, location.lng);
 	var distance = Math.floor(100 * 0.000621371 * google.maps.geometry.spherical.computeDistanceBetween (centerLatLng, locLatLng)) / 100; //in 1.00 miles
+
+    console.log(priceLevel);
+    createAlternative(marker, name, priceLevel, distance);
 
     google.maps.event.trigger(map, 'resize');
 }
@@ -121,7 +124,9 @@ $(document).ready(function() {
 
             var purchase = weeks[i][j];
             createMap(purchase);
-            addMarker({ lat: purchase.lat, lng: purchase.lng }, purchase.name, purchase.price, "http://icons.iconarchive.com/icons/icons-land/vista-map-markers/256/Map-Marker-Marker-Outside-Azure-icon.png", true);
+            addMarker({ lat: purchase.lat, lng: purchase.lng }, purchase.name, purchase.price, "img/marker.png", true);
+
+            $(".alternatives").empty();
 
             socket.emit("getPlacesData", {
                 name: purchase.merchant_name,
@@ -186,6 +191,26 @@ function createPurchase(i, j, name, date, amountDollars) {
     $("<p>").text(amountDollars).appendTo(amount);
 
     $(".purchase-list").append(purchase);
+}
+
+function createAlternative(marker, name, price, distance) {
+    var purchase = $("<div>").addClass("purchase")
+        .data("marker", marker)
+
+    var metadata = $("<div>").addClass("meta-data").appendTo(purchase);
+    var amount = $("<div>").addClass("amount").appendTo(purchase);
+
+    $("<h1>").text(name).addClass("name").appendTo(metadata);
+    $("<h2>").text(distance + " miles").addClass("date").appendTo(metadata);
+
+    var dolladolla = "";
+    for (var i = 0; i < Math.ceil(price); i++) {
+        dolladolla += "$";
+    }
+
+    $("<p>").text(dolladolla).appendTo(amount);
+
+    $(".alternatives").append(purchase);
 }
 
 //this is night mode for google maps
