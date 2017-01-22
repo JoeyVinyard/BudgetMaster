@@ -121,8 +121,16 @@ $(document).ready(function() {
 
     canvas = document.getElementById("canv");
     $("#canv").attr("width",$(".heatmap-container").width());
-    $("#canv").attr("height",$("#heatmapcont").height());
+    $("#canv").attr("height",$("#heatmapcont").height() - 70);
     ctx = canvas.getContext("2d");
+    $("#canv").hide();
+    $("#heatmapLabel").hide()
+
+        $(".heatmap h1").click(function() {
+            $("#canv").toggle();
+            $("#heatmapLabel").toggle();
+            $("#plotdiv").toggle();
+        });
 
     var done = false;
     socket.on("endData", function() {
@@ -181,34 +189,34 @@ $(document).ready(function() {
 
         var data = [];
         weeks.forEach(function(week){
-        	week.forEach(function(purchase){
-        		data.push({
-        			amount_spent: purchase.amount_spent,
-        			purchase_date: purchase.purchase_date
-        		});
-        	});
+            week.forEach(function(purchase){
+                data.push({
+                    amount_spent: purchase.amount_spent,
+                    purchase_date: purchase.purchase_date
+                });
+            });
         });
         console.log(data);
-        plotLineGraph(data, $(".heatmap-container").get(0));
+        plotLineGraph(data, $("#plotdiv").get(0));
     });
 
-        socket.on("addMarker", function(data) {
-            addMarker(data.location, data.name, data.price, undefined);
-        });
-	// var forAndrew = [{
-	// 				amount_spent: "1.02",
-	// 				purchase_date: "2016-12-12",
-	// 			},
-	// 			{
-	// 				amount_spent: "102",
-	// 				purchase_date: "2016-12-16",
-	// 			},
-	// 			{
-	// 				amount_spent: "13.85",
-	// 				purchase_date: "2017-01-12",
-	// 			},
-	// 			];
-	// plotLineGraph(forAndrew, $(".heatmap-container").get(0));
+    socket.on("addMarker", function(data) {
+        addMarker(data.location, data.name, data.price, undefined);
+    });
+    // var forAndrew = [{
+    //        amount_spent: "1.02",
+    //        purchase_date: "2016-12-12",
+    //      },
+    //      {
+    //        amount_spent: "102",
+    //        purchase_date: "2016-12-16",
+    //      },
+    //      {
+    //        amount_spent: "13.85",
+    //        purchase_date: "2017-01-12",
+    //      },
+    //      ];
+    // plotLineGraph(forAndrew, $(".heatmap-container").get(0));
 });
 function getWeekTot(week){
     var tot = 0;
@@ -261,6 +269,8 @@ function drawHeatMap(){
     var max = 0;
     var avg = 0;
     var count = 0;
+    var margin = 20;
+
     weeks.forEach(function(w){
         var weekAm = 0;
         w.forEach(function(d){
@@ -275,17 +285,18 @@ function drawHeatMap(){
             max=weekAm;
     });
     avg/=(count/weeks.length);
-    var cWid = $("#canv").width();
+    var cWid = $("#canv").width() - margin / 2;
     console.log(cWid);
     var cHgt = $("#canv").height();
-    weeks.forEach(function(w,c){
-        var red = (getWeekTot(w)/max)*255;
-        var green = 255-red;
-        var rgb = "rgb("+Math.floor(red)+","+Math.floor(green)+",0)"
-            ctx.fillStyle = rgb;
-        if(c<52)
-            ctx.fillRect((c%13)*(cWid/13),10+(Math.floor((c)/13))*60,50,50);
-    });
+    var margin = (cWid-(70*13))/2
+        weeks.forEach(function(w,c){
+            var red = (getWeekTot(w)/max)*255;
+            var green = 255-red;
+            var rgb = "rgb("+Math.floor(red)+","+Math.floor(green)+",0)"
+                ctx.fillStyle = rgb;
+            if(c<52)
+                ctx.fillRect(5 + margin+(c%13)*70,(Math.floor((c)/13))*70,60,60);
+        });
 }
 //this is night mode for google maps
 
@@ -376,7 +387,7 @@ var styles = [
 function plotLineGraph(data, container){
     var hover_text = [];
     for(var i = 0; i < data.length; i ++){
-	hover_text[i] = "$" + Math.floor(100 * data[i].amount_spent) / 100;
+        hover_text[i] = "$" + Math.floor(100 * data[i].amount_spent) / 100;
     }
     var amountsSpent = data.map(function(datum){
         return parseInt(datum.amount_spent);
@@ -394,18 +405,25 @@ function plotLineGraph(data, container){
         //showticklabels: false,
         type: "scatter",
         marker:{
-        	color: "rgb(0,0,0)"
+            color: "rgb(0,0,0)"
         }
     }];
     var layout = {
-		yaxis: {
-		    title: 'Dollars Spent',
-		    titlefont: {
-			family: 'Overpass, monospace',
-			size: 15,
-			color: '#7f7f7f'
-		    }
-		},
+        height: 275,
+        margin: {
+            l: 50,
+            r: 50,
+            t: 10,
+            b: 25,
+        },
+        yaxis: {
+            title: 'Dollars Spent',
+            titlefont: {
+                family: 'Overpass, monospace',
+                size: 15,
+                color: '#7f7f7f'
+            }
+        },
     };
 
     Plotly.newPlot(container, purchasesTrace, layout);

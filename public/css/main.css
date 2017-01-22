@@ -36,21 +36,36 @@ body {
     display: flex;
     flex-flow: column nowrap;
 
-    flex-grow: 1.5;
+    flex-grow: 1.15;
 }
 
 .heatmap {
-    flex-grow: 1;
+    height: 350px;
 }
 
 .spendings-and-recent {
     display: flex;
     flex-flow: row nowrap;
+
+    flex-grow: 1;
 }
 
 .spendings-and-recent > * {
     flex-grow: 1;
     flex-basis: 0;
+}
+
+.spendings {
+    display: flex;
+    flex-flow: column nowrap;
+}
+
+.spendings > * {
+    flex-grow: 1;
+}
+
+.spendings p {
+    font-size: 1.5em;
 }
 
 .main > div {
