@@ -162,8 +162,7 @@ io.on('connection', function(socket){
 							}
 							//Send andrew info
 							countComp++;
-							if(countComp>=Object.keys(data).length-1){
-								console.log("Finished");
+							if(countComp>=Object.keys(data).length-1&&!stop){
 								socket.emit("endData");
 								stop = true;
 							}

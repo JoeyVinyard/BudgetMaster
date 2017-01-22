@@ -8,6 +8,9 @@ var map;
 var bounds;
 var weeks = [];
 
+var canvas;
+var ctx;
+
 for(var i=0;i<=52;i++){
   var week = [];
   weeks.push(week);
@@ -83,7 +86,7 @@ function sortDates(data){
       }
       out+=date.getDate()+suff+" "+date.getFullYear();
       createPurchase(p.merchant_name,out,"$"+(Math.floor(p.amount_spent*100)/100));
-n    });
+    });
   });
 }
 var allData = [];
@@ -99,9 +102,30 @@ $(document).ready(function() {
         createMap(loc);
     });
 
+    canvas = document.getElementById("canv");
+    $("#canv").attr("width",$(".heatmap-container").width());
+    $("#canv").attr("height",$("#heatmapcont").height()-100);
+    ctx = canvas.getContext("2d");
+
+    var done = false;
     socket.on("endData", function() {
+      if(done)
+        return;
+      done=true;
       console.log("blah");
-        sortDates(allData);
+      sortDates(allData);
+      drawHeatMap();
+    });
+    var offset = $("#canv").parent().offset();
+    $("#canv").mousemove(function(event){
+      var index=(Math.floor((event.pageX-offset.left)/120)+13*(Math.floor((event.pageY-offset.top+20)/60)-1));
+      if(index<0)
+        index=0;
+      else if(index>52)
+        index=52;
+      ctx.fillStyle="black";
+      var d = new Date(new Date()-index*7*24*60*60*1000);
+      $("#heatmapLabel").text("Week of: " + months[d.getMonth()] + " " + d.getDate() + " | " + getWeekTot(weeks[index]),10,420);
     });
 
 //     socket.on("add-marker", function(marker) {
@@ -123,7 +147,11 @@ $(document).ready(function() {
 				];
 	//plotLineGraph(forAndrew, $(".heatmap-container").get(0));
 });
-
+function getWeekTot(week){
+  var tot = 0;
+  week.forEach(function(d){tot+=d.amount_spent});
+  return Math.floor(tot*100)/100;
+}
 var purchaseList = $("<div>").addClass("purchase-list");
 function createPurchase(name, date, amountDollars) {
     var purchase = $("<div>").addClass("purchase");
@@ -138,6 +166,34 @@ function createPurchase(name, date, amountDollars) {
     $(".purchase-list").append(purchase);
 }
 
+function drawHeatMap(){
+  var min = 1000000000;
+  var max = 0;
+  var avg = 0;
+  var count = 0;
+  weeks.forEach(function(w){
+    var weekAm = 0;
+    w.forEach(function(d){
+      var am = d.amount_spent;
+      weekAm+=am;
+      avg+=am;
+      count++;
+    });
+    if(weekAm<min)
+        min=weekAm;
+    else if(weekAm>max)
+      max=weekAm;
+  });
+  avg/=(count/weeks.length);
+    weeks.forEach(function(w,c){
+      var red = (getWeekTot(w)/max)*255;
+      var green = 255-red;
+      var rgb = "rgb("+Math.floor(red)+","+Math.floor(green)+",0)"
+      ctx.fillStyle = rgb;
+      if(c<52)
+        ctx.fillRect((c%13)*120,40+(Math.floor((c)/13))*60,105,50);
+  });
+}
 //this is night mode for google maps
 
 var styles = [
@@ -233,55 +289,10 @@ function plotLineGraph(data, container){
     });
 
     var purchasesTrace = [{
- //   	x: dates,
+    	x: dates,
     	y: amountsSpent,
-	hoverformat: "$",
-	showticklabels: false,
-    	type: "line"
+    	type: "scatter"
     }];
 
     Plotly.newPlot(container, purchasesTrace);
-}
-
-function setCurrentWeekExpenditures(amountSpent, averageAmountSpent){
-	$(".card .this-week").p.text(amountSpent);
-	if(amountSpent < .9 * averageAmountSpent){
-		//color is green
-	}else if(amountSpent < 1.1 * averageAmountSpent){
-		//color is yellow
-	}else{
-		//color is red
-	}
-}
-
-function calcAvgAmountSpent(weeks){
-	//returns average week expenses
-	var amountsPaid = weeks.map(function(week){
-		return week.map(function(purchase){
-			return purchase.amount_spent;
-		})
-	})
-	return 1/52 * (amountsPaid.reduce(function(amountsPaid, b) { return a + b; }, 0));
-}
-
-function setLastWeekExpenditures(amountSpent, averageAmountSpent){
-	$(".card .last-week").p.text(amountSpent);
-	if(amountSpent < .9 * averageAmountSpent){
-		//color is green
-	}else if(amountSpent < 1.1 * averageAmountSpent){
-		//color is yellow
-	}else{
-		//color is red
-	}
-}
-
-function setAvgAmountSpent(averageAmountSpent){
-	$(".card .week-average").p.text(amountSpent);
-	if(amountSpent < .9 * averageAmountSpent){
-		//color is green
-	}else if(amountSpent < 1.1 * averageAmountSpent){
-		//color is yellow
-	}else{
-		//color is red
-	}
 }
