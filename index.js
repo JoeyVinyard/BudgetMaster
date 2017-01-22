@@ -99,7 +99,7 @@ io.on('connection', function(socket){
 								"account_number": generateRandomNumber(16)
 							}
 					},function(error, response, bdy){
-						makeRandomPurchases(bdy.objectCreated._id, 4000);
+						makeRandomPurchases(bdy.objectCreated._id, 400);
 						if(!emitted){
 							emitted = true;
 							console.log("Emitting");
