@@ -142,30 +142,34 @@ io.on('connection', function(socket){
 	socket.on('loadData',function(user){
         console.log("loading data");
         var countComp = 0;
+        var stop = false;
 		request(baseUrl + "customers/" + user.custId + "/accounts" + keyUrl, function(error, response, bdy){
 			request(baseUrl + "accounts/" + JSON.parse(bdy)[1]._id + "/purchases" + keyUrl, function(error, response, body){
 				var data = JSON.parse(body);
 				var forAndrew;
 				Object.keys(data).forEach(function(d){
-					request(baseUrl + "enterprise/merchants/" + data[d].merchant_id + keyUrl, function(error, response, body){
-						body = JSON.parse(body); //for some reason it comes back as a string
-						forAndrew = {
-							merchant_name: body.name,
-							category: body.category[0],
-							amount_spent: data[d].amount,
-							purchase_date: data[d].purchase_date,
-							desc: data[d].description,
-							lat: body.geocode.lat,
-							lng: body.geocode.lng
-						}
-						//Send andrew info
-						countComp++;
-						if(countComp>=Object.keys(data).length-1){
-							console.log("Finished");
-							socket.emit("endData");
-						}
-                        socket.emit("receiveData", forAndrew);
-					});
+					if(!stop){
+						request(baseUrl + "enterprise/merchants/" + data[d].merchant_id + keyUrl, function(error, response, body){
+							body = JSON.parse(body); //for some reason it comes back as a string
+							forAndrew = {
+								merchant_name: body.name,
+								category: body.category[0],
+								amount_spent: data[d].amount,
+								purchase_date: data[d].purchase_date,
+								desc: data[d].description,
+								lat: body.geocode.lat,
+								lng: body.geocode.lng
+							}
+							//Send andrew info
+							countComp++;
+							if(countComp>=Object.keys(data).length-1){
+								console.log("Finished");
+								socket.emit("endData");
+								stop = true;
+							}
+	                        socket.emit("receiveData", forAndrew);
+						});
+					}
 				});
 				//console.log(forAndrew);
 			});
