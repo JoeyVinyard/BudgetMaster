@@ -17,7 +17,6 @@ var keyUrl = "?key=335c078a708beb9fffbe11ee6a51364e";
 //-----------------------
 let BASE_GOOGLE_URL = "https://maps.googleapis.com/maps/api/";
 let GOOGLE_API_KEY = "AIzaSyARogmz0eZ6aOPftL8k0tpQUmIymww0lNU";
-let DEFAULT_PRICE_LEVEL = 1.9;
 var map; //google map element
 
 app.get('/', function(req, res){
@@ -185,7 +184,7 @@ io.on('connection', function(socket){
 		"&radius=" + data.radius + "&type=" + data.type + "&key=" + GOOGLE_API_KEY;
     
     	request(requestString,function(error, response, body){
-    		var originalPrice = DEFAULT_PRICE_LEVEL;
+    		var originalPrice = Math.ceil(Math.random() * 2);
 
 			if (!error && response.statusCode == 200){
 				var places = JSON.parse(body).results;
@@ -199,7 +198,7 @@ io.on('connection', function(socket){
 				});
 				places.forEach(function(place){
 					if(place.price_level === undefined){
-						place.price_level = DEFAULT_PRICE_LEVEL;
+						place.price_level = 2;
 					}
 
 					if(originalPrice >= place.price_level && place.name != data.name){
