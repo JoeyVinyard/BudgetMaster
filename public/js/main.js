@@ -251,6 +251,8 @@ function drawHeatMap(){
     var max = 0;
     var avg = 0;
     var count = 0;
+    var margin = 20;
+
     weeks.forEach(function(w){
         var weekAm = 0;
         w.forEach(function(d){
@@ -265,7 +267,7 @@ function drawHeatMap(){
             max=weekAm;
     });
     avg/=(count/weeks.length);
-    var cWid = $("#canv").width();
+    var cWid = $("#canv").width() - margin / 2;
     console.log(cWid);
     var cHgt = $("#canv").height();
     weeks.forEach(function(w,c){
@@ -274,7 +276,7 @@ function drawHeatMap(){
         var rgb = "rgb("+Math.floor(red)+","+Math.floor(green)+",0)"
             ctx.fillStyle = rgb;
         if(c<52)
-            ctx.fillRect((c%13)*(cWid/13),10+(Math.floor((c)/13))*60,50,50);
+            ctx.fillRect(margin + (c%13)*(cWid/13),(Math.floor((c)/13))*60,50,50);
     });
 }
 //this is night mode for google maps
