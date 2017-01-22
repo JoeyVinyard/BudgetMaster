@@ -74,6 +74,19 @@ $(document).ready(function() {
 //     });
 });
 
+function createPurchase(name, date, amountDollars) {
+    var purchase = $("<div>").addClass("purchase");
+    var metadata = $("<div>").addClass("meta-data").appendTo(purchase);
+    var amount = $("<div>").addClass("amount").appendTo(purchase);
+
+    $("<h1>").text(name).addClass("name").appendTo(metadata);
+    $("<h2>").text(date).addClass("date").appendTo(metadata);
+
+    $("<p>").text(amountDollars).appendTo(amount);
+
+    return purchase;
+}
+
 //this is night mode for google maps
 
 var styles = [
