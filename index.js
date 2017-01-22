@@ -229,16 +229,15 @@ function generateRandomNumber(length){
 	return num;
 }
 
-// Pizza Hut, Walmart, Dick's Sporting Goods, Mcdonald's, Arby's,
+// Walmart, Dick's Sporting Goods, Mcdonald's, Arby's,
 // Starbucks, Cosi, Target, Meijer, Texas Roadhouse, Ruth's Chris,
 // Subway, UPS, Rich Table, Fleming's Prime, Lowe's
 
-var stores = ["5827c658360f81f10454a40d", "57cf75cfa73e494d8675f92c", "57cf75cea73e494d8675eed2", "57cf75cea73e494d8675f3e7",
+var stores = ["57cf75cfa73e494d8675f92c", "57cf75cea73e494d8675eed2", "57cf75cea73e494d8675f3e7",
 	      "57cf75cfa73e494d8675fa21", "57e69f8edbd83557146123ee", "57cf75cea73e494d8675f04c", "57cf75cea73e494d8675ed21",
 	      "57cf75cea73e494d8675ed3f", "57cf75cfa73e494d8675f866","57cf75cea73e494d8675ec49", "57cf75cfa73e494d8675fa21",
 	      "57cf75cfa73e494d8675fa29","57cf75cfa73e494d8675fa2a", "57cf75cea73e494d8675ee44", "57cf75cea73e494d8675ee48",
 	      "57cf75cea73e494d8675ee4f", "57cf75cea73e494d8675ee71", "57cf75cea73e494d8675ee74", "57cf75cea73e494d8675ee7b",
-	      "57cf75cea73e494d8675ee7f"
 	      ];
 
 
@@ -297,5 +296,6 @@ function makePurchase(accountID, merchantID, medium, purchaseDate, amount, descr
 		else if(body.code==undefined){
 			makePurchase(accountID,merchantID,medium,purchaseDate,amount,description);
 		}
+		console.log(body);
 	});
 }

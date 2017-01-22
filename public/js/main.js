@@ -180,6 +180,7 @@ $(document).ready(function() {
         var amountSpentLastWeek = weeks[weeks.length - 2].map(function(purchase){
             return purchase.amount_spent;
         }).reduce(function(a, b) { return a + b; }, 0);
+        amountSpentLastWeek = Math.floor(amountSpentLastWeek * 100) / 100;
         setLastWeekExpenditures(amountSpentLastWeek, avgAmountSpent);
         var amountSpentThisWeek = weeks[weeks.length - 1].map(function(purchase){
             return purchase.amount_spent;

@@ -19,6 +19,8 @@ $(document).ready(function() {
         socket.on('connStat', function(user){
             //socket.emit('loadData', user);
             console.log(user);
+            if(user.custId == "no")
+                return;
             localStorage.customerId = user.custId;
             localStorage.userInfo = JSON.stringify(user.use);
 
@@ -49,5 +51,6 @@ $(document).ready(function() {
             city: $(".reg-city").val(),
             zip: $(".reg-zipcode").val(),
         });
+        $.modal.close(); //this probably won't work
     });
 });
