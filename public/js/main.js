@@ -113,6 +113,7 @@ $(document).ready(function() {
         var amountSpentThisWeek = weeks[weeks.length - 1].map(function(purchase){
         	return purchase.amount_spent;
         }).reduce(function(a, b) { return a + b; }, 0);
+        amountSpentThisWeek = Math.floor(amountSpentThisWeek * 100) / 100;
         setCurrentWeekExpenditures(amountSpentThisWeek, avgAmountSpent);
     });
 
