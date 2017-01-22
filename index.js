@@ -115,7 +115,7 @@ io.on('connection', function(socket){
 					for(var i=0;i<out.length;i++){
 						out[i] = (out[i].replace(/\r/i,''));
 						if(out[i].includes(user.username)&&out[i].includes(user.password)){
-							socket.emit('connStat', {use: user,custId: out[i].substring(out[i].indexOf(":",out[i].indexOf(user.password))+1)});
+							socket.emit('connStat', {use: user,custId: out[i].split(":")[2]});
 							success=true;
 							fs.close(fd,function(err){console.log(err);});
 							break;
@@ -128,29 +128,69 @@ io.on('connection', function(socket){
 		});
 	});
 	socket.on('loadData',function(user){
-		console.log(user);
+        console.log("loading data");
+
 		request(baseUrl + "customers/" + user.custId + "/accounts" + keyUrl, function(error, response, bdy){
 			request(baseUrl + "accounts/" + JSON.parse(bdy)[1]._id + "/purchases" + keyUrl, function(error, response, body){
 				var data = JSON.parse(body);
-				for(p in data){
-	//				console.log(getMerchantInfo(data[p].merchant_id, data[p].purchase_date, data[p].amount, data[p].description));
-					request(baseUrl + "enterprise/merchants/" + data[p].merchant_id + keyUrl, function(error, response, body){
+				Object.keys(data).forEach(function(d){
+					request(baseUrl + "enterprise/merchants/" + data[d].merchant_id + keyUrl, function(error, response, body){
 						body = JSON.parse(body); //for some reason it comes back as a string
 						var forAndrew = {
 							merchant_name: body.name,
 							category: body.category[0],
-							amount_spent: data[p].amount,
-							purchase_date: data[p].purchase_date,
-							desc: data[p].description,
+							amount_spent: data[d].amount,
+							purchase_date: data[d].purchase_date,
+							desc: data[d].description,
 							lat: body.geocode.lat,
 							lng: body.geocode.lng
 						}
 						//Send andrew info
+                        socket.emit("receiveData", forAndrew);
 					});
-				}
+				});
 			});
 		});
 	});
+	socket.on('getPlacesData',function(data){
+		if(type === undefined){
+			type = "food";
+		}
+		if(radius === undefined){
+			radius = 500;
+		}
+	    var requestString = BASE_GOOGLE_URL +
+	    "place/nearbysearch/json?location=" + latitude + ", " + longitude +
+		"&radius=" + radius + "&type=" + type + "&key=" + GOOGLE_API_KEY;
+    
+    	request(requestString,function(error, response, body){
+    		var originalPrice;
+			if (!error && response.statusCode == 200){
+				var places = JSON.parse(body).results;
+			    places.forEach(function(place){
+					if(place.name == name){
+						originalPrice = place.price_level;
+					    return;
+					}
+				});
+				places.forEach(function(place){
+					if(place.price_level === undefined){
+						place.price_level = DEFAULT_PRICE_LEVEL;
+						//createMap(place.geometry.location); //instead socket this to the client
+                        //socket.emit("create-map", place.geometry.location);
+					}
+					if(originalPrice >= place.price_level && place.name != name){
+						//addMarker(place.geometry.location, place.name, place.price_level); //instead socket this to the client
+                        /*socket.emit("add-marker", {
+                            location: place.geometry.location,
+                            name: place.name,
+                            price: place.price_level,
+                        });*/
+					}
+				});
+			}
+		});
+	})
 });
 
 http.listen(3000, function(){
@@ -185,30 +225,19 @@ var stores = ["5827c658360f81f10454a40d", "57cf75cfa73e494d8675f92c", "57cf75cea
 	      "57cf75cfa73e494d8675fa21", "57e69f8edbd83557146123ee", "57cf75cea73e494d8675f04c", "57cf75cea73e494d8675ed21",
 	      "57cf75cea73e494d8675ed3f", "57cf75cfa73e494d8675f866","57cf75cea73e494d8675ec49" ];
 
-function makeRandomPurchases(accountID, numFreakingPurchases){
-    for(var i = 0; i < numFreakingPurchases; i ++){
-	var merchantID = stores[getRandomInt(0,stores.length)];
-	var medium = "balance";
-	var month = getRandomInt(11,13);
-	if(month == 13)
-	    month = 1;
-	var day;
-	if(month == 1 || month ==  3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12){
-	    day = getRandomInt(1, 31);
-	}else if(month == 2){
-	    day = getRandomInt(1,28);
-	}else{
-	    day = getRandomInt(1,30);
-	}
-	if(month < 10)
-	    month = "0" + month.toString();
-	if(day < 10)
-	    day = "0" + day.toString();
 
-	var purchaseDate = "2016-" + month + "-" + day;
-	var amount = getRandomDouble(5, 107.4);
-	var description = "description";
-	makePurchase(accountID, merchantID, undefined, purchaseDate, amount, description);
+function getRandomDate(start, end) {
+	return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime())).toISOString().substring(0, 10);
+}
+
+function makeRandomPurchases(accountID, numPurchases){
+	let monthOffset = 3; //how many months we look back
+	let end = new Date();
+	let start = new Date();
+	start.setMonth(start.getMonth() - monthOffset);
+	for(var i = 0; i < numPurchases; i++){
+		makePurchase(accountID, stores[getRandomInt(0, 11)], undefined,
+			getRandomDate(start, end), Math.floor(getRandomDouble(5, 107.4)*100)/100, "description");
     }
 }
 
@@ -219,6 +248,7 @@ function getRandomDouble(min, max) {
     return Math.random() * (max - min) + min;
 }
 function makePurchase(accountID, merchantID, medium, purchaseDate, amount, description){
+	console.log(purchaseDate);
 	if(merchantID === undefined){
 		merchantID = "57cf75cea73e494d8675ec49"; //Dunkin Donuts in NC
 	}
@@ -245,39 +275,9 @@ function makePurchase(accountID, merchantID, medium, purchaseDate, amount, descr
 				  "description": description
 			}
 	},function(error, response, body){
-		
+		console.log(body.objectCreated);
 	});
 }
-
-function getPurchases(accountID){
-	request(baseUrl + "accounts/" + accountID + "/purchases" + keyUrl, function(error, response, body){
-		var data = JSON.parse(body);
-		for(p in data){
-			console.log(getMerchantInfo(data[p].merchant_id, data[p].purchase_date, data[p].amount, data[p].description));
-		}
-	});
-}
-
-function getMerchantInfo(merchantID, purchaseDate, amountSpent, description){
-	//get lat, lng, category
-	request(baseUrl + "enterprise/merchants/" + merchantID + keyUrl, function(error, response, body){
-			body = JSON.parse(body); //for some reason it comes back as a string
-			var forChris = {			//this is all the data needed to run through getPlacesData
-				lat: body.geocode.lat,
-				lng: body.geocode.lng,
-				category: body.category[0],
-				merchant_name: body.name
-			}
-			var forAndrew = {
-				merchant_name: body.name,
-				category: body.category[0],
-				amount_spent: amountSpent,
-				purchase_date: purchaseDate,
-				map_data: forChris
-			}
-		});
-}
-
 //-----------------------
 //---Google Places API---
 //-----------------------
@@ -287,45 +287,3 @@ let DEFAULT_PRICE_LEVEL = 1.9;
 
 var map; //google map element
 
-function getPlacesData(name, latitude, longitude, type, radius){
-	if(type === undefined){
-		type = "food";
-	}
-	if(radius === undefined){
-		radius = 1000;
-	}
-    var requestString = BASE_GOOGLE_URL +
-    "place/nearbysearch/json?location=" + latitude + ", " + longitude +
-	"&radius=" + radius + "&type=" + type + "&key=" + GOOGLE_API_KEY;
-    
-    request(requestString,
-    	function(error, response, body){
-    		var originalPrice;
-			if (!error && response.statusCode == 200){
-				var places = JSON.parse(body).results;
-			    places.forEach(function(place){
-					if(place.name == name){
-						originalPrice = place.price_level;
-					    return;
-					}
-				});
-				places.forEach(function(place){
-					if(place.price_level === undefined){
-						place.price_level = DEFAULT_PRICE_LEVEL;
-						//createMap(place.geometry.location); //instead socket this to the client
-                        //socket.emit("create-map", place.geometry.location);
-					}
-					if(originalPrice >= place.price_level && place.name != name){
-						//addMarker(place.geometry.location, place.name, place.price_level); //instead socket this to the client
-                        /*socket.emit("add-marker", {
-                            location: place.geometry.location,
-                            name: place.name,
-                            price: place.price_level,
-                        });*/
-					}
-				});
-			}
-		});
-}
-
-// getPlacesData("Dollar Tree", 42.429088, -76.51341959999999, "store");

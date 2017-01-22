@@ -1,12 +1,31 @@
-;//----------------
+//----------------
 //Google Maps Junk
 //----------------
 
+var map;
+var bounds;
+var weeks = [];
+
+for(var i=0;i<52;i++){
+  var week = [];
+  weeks.push(week);
+}
+var centerPoint;
+
 function createMap(center){
-	map = new google.maps.Map(document.getElementById("map"), {
+	if(center === undefined){
+		center = {			//Purdue University
+			lat: 40.424,
+    		lng: -86.929
+		}
+	}
+	map = new google.maps.Map($(".map").get(0), {
 		center,
+		zoom: 12,
 		styles
 	});
+	bounds = new google.maps.LatLngBounds();
+	centerPoint = center;
 }
 
 function addMarker(location, name, priceLevel){
@@ -15,23 +34,42 @@ function addMarker(location, name, priceLevel){
 		map,
 		title: name
 	});
+	bounds.extend(marker.position); //auto zooms to include markers
 	marker.addListener("click", function(){
 		new google.maps.InfoWindow({
 			content: "<p>" + name + "</p><p>Price: " + Array(Math.ceil(priceLevel)+1).join("$") + "</p>"
 		}).open(map, marker);
 	});
+	var distance = Math.floor(100 * 0.000621371 * google.maps.geometry.spherical.computeDistanceBetween (centerPoint, location)) / 100; //in 1.00 miles
+}
+
+function sortDates(data){
+  var index = Math.floor((new Date() - new Date(data.purchase_date))/604800000)
+  weeks[index].push(data);
+  weeks[index].sort(function(a,b){
+    if(new Date(a.purchase_date)<new Date(b.purchase_date))
+      return -1;
+    else
+      return 1;
+  })
 }
 
 $(document).ready(function() {
     var socket = io("http://localhost:3000");
 
+    socket.emit("loadData", { custId: localStorage.customerId });
+    socket.on("receiveData", function(data) {
+        console.log(data);
+        sortDates(data)
+    });
+    
     socket.on("create-map", function(loc) {
         createMap(loc);
     });
 
-    socket.on("add-marker", function(marker) {
-        addMarker(marker.location, marker.name, marker.price);
-    });
+//     socket.on("add-marker", function(marker) {
+//         addMarker(marker.location, marker.name, marker.price);
+//     });
 });
 
 //this is night mode for google maps
@@ -161,6 +199,7 @@ function plotBarGraph(data){
 	orientation: 'h'
     }];
 
+
     Plotly.newPlot('myDiv', data);
     
     var scale = [0];
@@ -170,13 +209,16 @@ function plotBarGraph(data){
 			    
 			    
 }
+
+/*
 function plotHeatMap(data){
 
     data.foreach(function(p){
-	var timeStamp = p.purchase_date;
-	var time = timeStamp.split('-');
-	plotData[Math.floor(time[2]/6)][time[1]] = p.amount_spent;
-    });
+        var timeStamp = p.purchase_date;
+        var time = timeStamp.split('-');
+        //plotData[Math.floor(time[2]/6)][time[1] = p.amount_spent;
+    }
+>>>>>>> 3d643ffbae7846a439a554c08d4e68c56e658cdc
 
     var graph = [
       {
@@ -201,7 +243,7 @@ function plotHeatMap(data){
       }
     ];
     Plotly.plot(TESTER,graph);
-}
+}*/
 
 //plotHeatMap([1,.4,.6,.2,.9,0]);
 //console.log( Plotly.BUILD );
