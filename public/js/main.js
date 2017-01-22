@@ -4,6 +4,12 @@
 
 var map;
 var bounds;
+var weeks = [];
+
+for(var i=0;i<52;i++){
+  var week = [];
+  weeks.push(week);
+}
 var centerPoint;
 
 function createMap(center){
@@ -37,12 +43,24 @@ function addMarker(location, name, priceLevel){
 	var distance = Math.floor(100 * 0.000621371 * google.maps.geometry.spherical.computeDistanceBetween (centerPoint, location)) / 100; //in 1.00 miles
 }
 
+function sortDates(data){
+  var index = Math.floor((new Date() - new Date(data.purchase_date))/604800000)
+  weeks[index].push(data);
+  weeks[index].sort(function(a,b){
+    if(new Date(a.purchase_date)<new Date(b.purchase_date))
+      return -1;
+    else
+      return 1;
+  })
+}
+
 $(document).ready(function() {
     var socket = io("http://localhost:3000");
 
     socket.emit("loadData", { custId: localStorage.customerId });
     socket.on("receiveData", function(data) {
         console.log(data);
+        sortDates(data)
     });
     
     socket.on("create-map", function(loc) {
@@ -153,6 +171,44 @@ function plotLineGraph(data){
     
     
 }
+function plotBarGraph(data){
+    var spending = data.map(function(o){
+	return o.amount_spent;
+    });
+    var present_day = date.getDay();
+    var sum = 0;
+    var max = 0;
+    var min = 10000000;
+    var lastWeeklySum = 0;
+    var weeklySum = 0;
+    for(var i = 0; i < data.length; i ++){
+	var transaction_day = purchase_date.substring(lastIndexOf("-"));
+	if(present_day - transaction_day < 7){
+	    weeklySum += data.amount_spent;
+	}else if(present_day - transaction_day < 14){
+	    lastWeeklySum  += data.amount_spent;
+	}
+	sum += data.amount_spent;
+    }
+    var total_weekly_average = sum/12;
+    
+    var data = [{
+	type: 'bar',
+	x: [weeklySum, lastWeeklySum, total_weekly_average],
+	y: ['This Weeks Average', 'Last Week Average', 'Average of The Weekly Averages'],
+	orientation: 'h'
+    }];
+
+
+    Plotly.newPlot('myDiv', data);
+    
+    var scale = [0];
+    for(var i = 0; i < 10; i ++){
+	
+    }
+			    
+			    
+}
 
 /*
 function plotHeatMap(data){
@@ -162,6 +218,7 @@ function plotHeatMap(data){
         var time = timeStamp.split('-');
         //plotData[Math.floor(time[2]/6)][time[1] = p.amount_spent;
     }
+>>>>>>> 3d643ffbae7846a439a554c08d4e68c56e658cdc
 
     var graph = [
       {
