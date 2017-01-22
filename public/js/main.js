@@ -322,11 +322,11 @@ function plotLineGraph(data, container){
 function setCurrentWeekExpenditures(amountSpent, averageAmountSpent){
 	$(".this-week p").text("$" + amountSpent);
 	if(amountSpent < .9 * averageAmountSpent){
-		//color is green
+		$(".this-week p").css("box-shadow", "inset 0 0 10px green");//color is green
 	}else if(amountSpent < 1.1 * averageAmountSpent){
-		//color is yellow
+		$(".this-week p").css("box-shadow", "inset 0 0 10px yellow");//color is yellow
 	}else{
-		//color is red
+		$(".this-week p").css("box-shadow", "inset 0 0 10px red");//color is red
 	}
 }
 
@@ -345,16 +345,17 @@ function calcAvgAmountSpent(weeks){
 
 function setLastWeekExpenditures(amountSpent, averageAmountSpent){
 	$(".last-week p").text("$" + amountSpent);
+	console.log(amountSpent);
 	if(amountSpent < .9 * averageAmountSpent){
-		//color is green
+		$(".last-week p").css("box-shadow", "inset 0 0 10px green");
 	}else if(amountSpent < 1.1 * averageAmountSpent){
-		//color is yellow
+		$(".last-week p").css("box-shadow", "inset 0 0 10px yellow");
 	}else{
-		//color is red
+		$(".last-week p").css("box-shadow", "inset 0 0 10px red");
 	}
 }
 
 function setAvgAmountSpent(averageAmountSpent){
 	$(".week-average p").text("$" + averageAmountSpent);
-	//color is yellow
+	$(".week-average p").css("box-shadow", "inset 0 0 10px yellow");
 }

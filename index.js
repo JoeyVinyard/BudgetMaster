@@ -100,7 +100,7 @@ io.on('connection', function(socket){
 								"account_number": generateRandomNumber(16)
 							}
 					},function(error, response, bdy){
-						makeRandomPurchases(bdy.objectCreated._id, 20);
+						makeRandomPurchases(bdy.objectCreated._id, 4000);
 						if(!emitted){
 							emitted = true;
 							console.log("Emitting");
@@ -247,6 +247,7 @@ function makeRandomPurchases(accountID, numPurchases){
 	let end = new Date();
 	let start = new Date();
 	start.setMonth(start.getMonth() - monthOffset);
+	console.log(numPurchases);
 	for(var i = 0; i < numPurchases; i++){
 		makePurchase(accountID, stores[getRandomInt(0, 11)], undefined,
 			getRandomDate(start, end), Math.floor(getRandomDouble(5, 107.4)*100)/100, "description");
